@@ -10,7 +10,7 @@ module.exports = {
   // DEVELOPMENT_DB: "lotterydb",
   // DB_HOST: "localhost",
   // DB_USER: "root",
-  DB_PASSWORD:  "",
+  // DB_PASSWORD:  "",
   ENVIRONMENT: process.env.NODE_ENV || "development",
   TOKEN_SECRET: process.env.TOKEN_SECRET || "tokenultrasecreto",
   BASIC_AUTH_USER: process.env.BASIC_AUTH_USER || "xandbox",
