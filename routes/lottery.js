@@ -95,7 +95,7 @@ router.post('/pago', async (req, res) => {
       transaction_details: {
         financial_institution: bank,
       },
-      callback_url: "https://charlystore.com.co/account&my-shopping", // Reemplazar con tu URL de callback real
+      callback_url: "https://meliticoyricolino.inletsoft.com/", // Reemplazar con tu URL de callback real
       payer: {
         first_name: name_capitalize,
         last_name: name_capitalize,
