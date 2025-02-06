@@ -151,10 +151,7 @@ router.post('/sendmail',
       let mailOptions = {};
       console.log(req.body,"************");
       console.log(data);
-      let obj ={};
-      if(data.params){
-        obj = JSON.parse(data.params);
-      }
+
 
             let htmlCorreo =`<!DOCTYPE html>
         <html lang="es">
@@ -293,8 +290,8 @@ router.post('/sendmail',
           }
         })
         mailOptions = {
-          from: "ivcsab@gmail.com",
-          to:data.email,
+          from: "Carlosmariopastranadoria@gmail.com",
+          to:req.body.email,
           subject:"Equipo de Meliticoyricolino",
           html:htmlCorreo,
           attachments: []
