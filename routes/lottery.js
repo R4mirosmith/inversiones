@@ -1,6 +1,7 @@
 var express = require('express');
 var lotteryModel = require('../models/lottery.js');
 var userModel = require('../models/users');
+const nodemailer = require("nodemailer");
 var {check,validationResult} = require('express-validator');
 var {matchedData,sanitize} = require('express-validator');
 const { v4: uuidv4 } = require('uuid');
@@ -86,7 +87,7 @@ router.post('/pago', async (req, res) => {
 
     // Crear un objeto de pago
     const body  = {
-      description: `Compra de ${number.length} números de lotería`,
+      description: `Compra de ${number.length} números del sorteo`,
       transaction_amount: 10000 * number.length,
       payment_method_id: "pse", // Asumiendo que usas PSE
       additional_info: {
@@ -137,55 +138,149 @@ router.post('/pago', async (req, res) => {
 ////////////////////////////////////////////////////////////////////////
 //                     SEND MAIL
 ////////////////////////////////////////////////////////////////////////
-router.post('/sendmail',jwt.ensureJWTAuth, [
-    check('email')
-      .exists().withMessage('email es requerido')
-      .trim()
-    ], 
+router.post('/sendmail',
     async (req,res) => { try {
       res.setHeader('Content-Type', 'application/json');
-      log.logger.info(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "body":"${JSON.stringify(req.body)}","user":"${req.user.user_id}"}`);
+      log.logger.info(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "body":"${JSON.stringify(req.body)}","user":""}`);
             
       //Handle validation errors
       var errors = validationResult(req);
       if (!errors.isEmpty()) return res.status(400).send(JSON.stringify({success:false,error:{code:201, message:"Request has invalid data",details:errors.mapped()}}, null, 3));
       //Get matched data
-      const data = matchedData(req);
+      const data = matchedData(req.body);
       let mailOptions = {};
+      console.log(req.body,"************");
+      console.log(data);
       let obj ={};
       if(data.params){
         obj = JSON.parse(data.params);
       }
-      console.log(req.body,"parametrossssssssssssss")
-      let url = !data.inspeccion_id?`https://appmagdalena.net/ivc/download/excel/formatoinscripcion?id_tercero=${obj.tercero_id}`:`https://appmagdalena.net/ivc/download/excel/formatoinspeccion?id=${data.inspeccion_id}&id_tercero=${req.body.tercero_id}`;
-      // let url = !data.inspeccion_id?`http://localhost:3001/ivc/download/excel/formatoinscripcion?id_tercero=${obj.tercero_id}`:`http://localhost:3001/ivc/download/excel/formatoinspeccion?id=${data.inspeccion_id}&id_tercero=${req.body.tercero_id}`;
-      
-      
-      let htmlCorreo =`<!DOCTYPE html>
-      <html lang="en">
-      <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Notificación de descarga</title>
-      </head>
-      <body>
-          <div style="font-family: Arial, sans-serif;">
-              <!-- Cabecera con el logo -->
-              <div style="text-align: left;">
-                  <img src="cid:logo" alt="Logo de la empresa" style="max-width: 200px;">
-  
-              </div>
-              <hr>
-              <h2>Notificación de descarga</h2>
-              <p>Hola [Nombre del destinatario],</p>
-              <p>Te informamos que has descargado con éxito el archivo desde el siguiente enlace:</p>
-              <p><a href=${url}>Descargar archivo</a></p>
-              <p>¡Gracias por utilizar nuestro servicio!</p>
-              <p>Saludos cordiales,<br>El equipo de [Nombre de tu empresa]</p>
-          </div>
-      </body>
-      </html>`;
-  
+
+            let htmlCorreo =`<!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Notificación de Compra de Números del sorteo</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    color: #333;
+                    background-color: #f4f4f4;
+                    margin: 0;
+                    padding: 0;
+                }
+                .container {
+                    width: 100%;
+                    max-width: 600px;
+                    margin: 20px auto;
+                    background-color: #ffffff;
+                    padding: 20px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                }
+                .header {
+                    text-align: center;
+                    margin-bottom: 20px;
+                }
+                .header img {
+                    max-width: 180px;
+                }
+                h2 {
+                    color: #2c3e50;
+                    font-size: 24px;
+                    margin-bottom: 10px;
+                }
+                p {
+                    font-size: 16px;
+                    line-height: 1.5;
+                    color: #555;
+                }
+                .important {
+                    background-color: #f8d7da;
+                    color: #721c24;
+                    padding: 10px;
+                    border-radius: 5px;
+                    margin-bottom: 20px;
+                }
+                ul {
+                    list-style-type: none;
+                    padding: 0;
+                    margin-bottom: 20px;
+                }
+                ul li {
+                    background-color: #ecf0f1;
+                    padding: 10px;
+                    margin-bottom: 5px;
+                    border-radius: 5px;
+                }
+                .footer {
+                    font-size: 14px;
+                    text-align: center;
+                    color: #888;
+                }
+                .footer a {
+                    color: #3498db;
+                    text-decoration: none;
+                }
+                .button {
+                    display: inline-block;
+                    background-color: #3498db;
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    text-align: center;
+                    font-weight: bold;
+                    text-decoration: none;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <!-- Cabecera con el logo -->
+                <div class="header">
+                    <img src="cid:logo" alt="!Melitico y ricolino¡">
+                </div>
+
+                <hr>
+                <h2>Notificación de Compra de Números del sorteo</h2>
+                <p>Hola [Nombre del destinatario],</p>
+
+                <p>Te informamos que has adquirido exitosamente los siguientes números del sorteo en Meliticoyricolino:</p>
+
+                <!-- Lista de números de lotería -->
+                <ul>
+                    <li>Número 1: [Número 1]</li>
+                    <li>Número 2: [Número 2]</li>
+                    <li>Número 3: [Número 3]</li>
+                    <li>Número 4: [Número 4]</li>
+                    <li>Número 5: [Número 5]</li>
+                    <!-- Puedes agregar más números según sea necesario -->
+                </ul>
+
+                <!-- Mensaje importante -->
+                <div class="important">
+                    <p><strong>Importante:</strong> Si no completas el pago dentro de los siguientes <strong>15 minutos</strong>, tus números perderán su validez y serán liberados nuevamente para otros usuarios.</p>
+                </div>
+
+                <p>Te recomendamos completar el proceso de pago lo antes posible para garantizar tu participación en el sorteo. Si ya has finalizado el pago, por favor ignora este mensaje.</p>
+
+                <p>Si tienes alguna pregunta o necesitas asistencia, no dudes en contactarnos.</p>
+
+                <!-- Botón de acción -->
+                <a href="[Enlace de pago]" class="button">Finaliza tu pago</a> 
+
+                <p>¡Gracias por confiar en nosotros!</p>
+
+                <div class="footer">
+                    <p>Saludos cordiales,<br>El equipo de Meliticoyricolino</p>
+                    <p><a href="mailto:soporte@meliticoyricolino.com">soporte@meliticoyricolino.com</a> | <a href="[Enlace a la página web]">Visítanos</a></p>
+                </div>
+            </div>
+        </body>
+        </html>
+`;
+                            
   
       const transporter = nodemailer.createTransport(
         {
@@ -193,37 +288,19 @@ router.post('/sendmail',jwt.ensureJWTAuth, [
           port:465,
           secure:true,
           auth:{
-            user: "ivcsab@gmail.com", 
-            pass: "jktd eiaz wxct lkej"
+            user: "Carlosmariopastranadoria@gmail.com", 
+            pass: "bnmk epcd qzgn hzln"
           }
         })
-    
-      if(!data.inspeccion_id){
         mailOptions = {
           from: "ivcsab@gmail.com",
           to:data.email,
-          subject:"Enviado desde ivc-sab",
+          subject:"Equipo de Meliticoyricolino",
           html:htmlCorreo,
-           attachments: [{
-          filename: 'logo-ivc.png',
-          path: 'routes/assets/logo-ivc.png',
-          cid: 'logo'
-      }]
-        }
-      }else{
-  
-        mailOptions = {
-          from: "ivcsab@gmail.com",
-          to:data.email,
-          subject:"Enviado desde ivc-sab",
-          html:htmlCorreo,
-          attachments: [{
-         filename: 'logo-ivc.png',
-         path: 'routes/assets/logo-ivc.png',
-         cid: 'logo'
-     }]
-        }
-      }
+          attachments: []
+    }
+        
+      
   
     
   
@@ -238,7 +315,7 @@ router.post('/sendmail',jwt.ensureJWTAuth, [
   
     }
     catch(err){
-      log.logger.error(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":"${req.user.user_id}", "error":"${err}"}`);
+      log.logger.error(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":"", "error":"${err}"}`);
       return res.status(500).send(JSON.stringify({success:false,error:{code:301,message:"Error in service or database", details:err}}, null, 3));
 }});
 
