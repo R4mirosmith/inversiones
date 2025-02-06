@@ -262,7 +262,7 @@ router.post('/sendmail',
                 <p>Si tienes alguna pregunta o necesitas asistencia, no dudes en contactarnos.</p>
 
                 <!-- Botón de acción -->
-                <a href="[Enlace de pago]" class="button">Finaliza tu pago</a> 
+                <a href="${req.body.url}" class="button">Finaliza tu pago</a> 
 
                 <p>¡Gracias por confiar en nosotros!</p>
 
@@ -344,14 +344,14 @@ catch(err){
 ////////////////////////////////////////////////////////////////////////
 //                Get list of all Jornadas
 ////////////////////////////////////////////////////////////////////////
-router.get('/gastos/all', jwt.ensureJWTAuth, permission.hasType('Admin'), [
-  check('fecha_ini')
+router.get('/paymet/all', [
+  check('numbers')
     .optional()
     .trim()
     ], 
 async(req,res) => { try {
   res.setHeader('Content-Type', 'application/json');
-  log.logger.info(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":"${req.user.user_id}"}`);
+  log.logger.info(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":"/paymet/all"}`);
   
   //Handle validations errors
   var errors = validationResult(req);
@@ -362,14 +362,14 @@ async(req,res) => { try {
 
 
   //Getting Jornadas
-  const [[Gastos]] = await adminModel.getGastosOperacionalesAll(data.fecha_ini);
-  if(!Gastos) return res.status(500).send(JSON.stringify({success:false,error:{code:301,message:"Error in database", details:null}}, null, 3));
-  if(Gastos.length===0) return res.status(200).send(JSON.stringify({success:true,data:{count:Gastos.count,gastos:Gastos}}, null, 3));
+  const [[Numbers]] = await lotteryModel.getlistNumbersApproved(data.numbers);
+  if(!Numbers) return res.status(500).send(JSON.stringify({success:false,error:{code:301,message:"Error in database", details:null}}, null, 3));
+  if(Numbers.length===0) return res.status(200).send(JSON.stringify({success:true,data:{count:Numbers.length,numbers:Numbers}}, null, 3));
 
   
   return res.status(200).send(JSON.stringify({success:true,data:{count:Gastos[0].total,gastos:Gastos}}, null, 3));}
 catch(err){
-  log.logger.error(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":"${req.user.user_id}", "error":"${err}"}`);
+  log.logger.error(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":"", "error":"${err}"}`);
   return res.status(500).send(JSON.stringify({success:false,error:{code:301,message:"Error in service or database", details:err}}, null, 3));
 }});
 

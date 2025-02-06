@@ -32,3 +32,8 @@ exports.getAll = (page,limit) => {
     const promisePool = db.get().promise();
     return promisePool.query('CALL sp_GetAllPurchasedNumbers()',  [page,limit]);
 }
+exports.getlistNumbersApproved = (numbers) => {
+    // query database using promises
+    const promisePool = db.get().promise();
+    return promisePool.query('CALL sp_GetNumberPurchasesByPayments(?)',  [numbers]);
+}
