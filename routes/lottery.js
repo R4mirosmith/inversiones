@@ -241,19 +241,16 @@ router.post('/sendmail',
 
                 <hr>
                 <h2>Notificación de Compra de Números del sorteo</h2>
-                <p>Hola [Nombre del destinatario],</p>
+                <p>Hola ${req.body.name},</p>
 
                 <p>Te informamos que has adquirido exitosamente los siguientes números del sorteo en Meliticoyricolino:</p>
 
                 <!-- Lista de números de lotería -->
-                <ul>
-                    <li>Número 1: [Número 1]</li>
-                    <li>Número 2: [Número 2]</li>
-                    <li>Número 3: [Número 3]</li>
-                    <li>Número 4: [Número 4]</li>
-                    <li>Número 5: [Número 5]</li>
-                    <!-- Puedes agregar más números según sea necesario -->
-                </ul>
+ 
+                    <!-- Lista dinámica de números -->
+                    <ul>
+                        ${req.body.numbers.map((num, index) => `<li>Número ${index + 1}: ${num}</li>`).join('')}
+                    </ul>
 
                 <!-- Mensaje importante -->
                 <div class="important">
@@ -271,7 +268,7 @@ router.post('/sendmail',
 
                 <div class="footer">
                     <p>Saludos cordiales,<br>El equipo de Meliticoyricolino</p>
-                    <p><a href="mailto:soporte@meliticoyricolino.com">soporte@meliticoyricolino.com</a> | <a href="[Enlace a la página web]">Visítanos</a></p>
+                    <p><a href="mailto:Carlosmariopastranadoria@gmail.com">Carlosmariopastranadoria@gmail.com</a> | <a href="https://meliticoyricolino.inletsoft.com/">Visítanos</a></p>
                 </div>
             </div>
         </body>
