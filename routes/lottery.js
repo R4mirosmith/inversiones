@@ -261,9 +261,6 @@ router.post('/sendmail',
 
                 <p>Si tienes alguna pregunta o necesitas asistencia, no dudes en contactarnos.</p>
 
-                <!-- Botón de acción -->
-                <a href="${req.body.url}" class="button">Finaliza tu pago</a> 
-
                 <p>¡Gracias por confiar en nosotros!</p>
 
                 <div class="footer">
