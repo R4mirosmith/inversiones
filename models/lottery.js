@@ -39,6 +39,13 @@ exports.getlistNumbersApproved = (numbers) => {
 }
 
 
+exports.getAllPerson = (page,limit) => {
+    // query database using promises
+    const promisePool = db.get().promise();
+    return promisePool.query('CALL sp_GetPersonsByNumberState()',  [page,limit]);
+}
+
+
 const axios = require('axios');
 
 exports.checkAndUpdatePayments = async () => {
