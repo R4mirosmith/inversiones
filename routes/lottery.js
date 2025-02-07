@@ -372,45 +372,29 @@ catch(err){
 
 
 ////////////////////////////////////////////////////////////////////////
-//                     Update an tipo vehiculo
+//               Delete pagos
 ////////////////////////////////////////////////////////////////////////
-router.post('/tipovehiculo/tarifa', jwt.ensureJWTAuth, permission.hasType('Admin'), [
-  check('id_tipo_vehiculo')
-    .exists().withMessage('id_tipo_vehiculo is required')
-    .isInt()
-    .trim(),
-  check('tarifa')
-    .exists().withMessage('p_tarifa is required')
-    .isInt()
-    .trim(),
-    ],
-    async (req, res) => {
-      try {
-        res.setHeader('Content-Type', 'application/json');
-        log.logger.info(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "body":"${JSON.stringify(req.body)}","user":"${req.user.user_id}"}`);
+router.get('/checkAndUpdatePayments',
+  async(req,res) => { try {
+    res.setHeader('Content-Type', 'application/json');
+    log.logger.info(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":"/paymet/all"}`);
+    
+    //Handle validations errors
+    var errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).send(JSON.stringify({success:false,error:{code:201, message:"Request has invalid data",details:errors.mapped()}}, null, 3));
+
+    //Getting Jornadas
+    const Numbers= await lotteryModel.checkAndUpdatePayments();
+    console.log(Numbers)
+    // if(!Numbers) return res.status(500).send(JSON.stringify({success:false,error:{code:301,message:"Error in database", details:null}}, null, 3));
+    // if(Numbers.length===0) return res.status(200).send(JSON.stringify({success:true,data:{count:Numbers.length,numbers:Numbers}}, null, 3));
   
-        //Handle validation errors
-        var errors = validationResult(req);
-        if (!errors.isEmpty()) return res.status(400).send(JSON.stringify({success: false,error: {code: 201, message: "Request has invalid data", details: errors.mapped()}}, null, 3));
-  
-        //Get matched data
-        const data = matchedData(req);
-  
-        //Prepare data
-        // if (data.tipo_vehiculo) data.tipo_vehiculo = capitalize.words(data.tipo_vehiculo.toLowerCase());
-  
-  
-        const [[[TipoVehiculo]]] = await adminModel.putTipoVehiculo(data.id_tipo_vehiculo,data.tarifa,req.user.user_id);
-  
-        if (!TipoVehiculo) return res.status(500).send(JSON.stringify({success: false,error: { code: 301, message: "Error in database", details: null}}, null, 3));
-        if (TipoVehiculo.result < 1) return res.status(500).send(JSON.stringify({success: false,error: {code: 301, message: "Error in database",details: null}}, null, 3));
-        
-        return res.status(200).send(JSON.stringify({success: true,data: {tipovehiculo: TipoVehiculo.result}}, null, 3));
-      } catch (err) {
-        log.logger.error(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":"${req.user.user_id}", "error":"${err}"}`);
-        return res.status(500).send(JSON.stringify({success: false,error: {code: 301,message: "Error in service or database",details: err}}, null, 3));
-      }
-});
+    
+    return res.status(200).send(JSON.stringify({success:true,data:{numbers:Numbers}}, null, 3));}
+  catch(err){
+    log.logger.error(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":"", "error":"${err}"}`);
+    return res.status(500).send(JSON.stringify({success:false,error:{code:301,message:"Error in service or database", details:err}}, null, 3));
+  }});
 
 
 
