@@ -46,7 +46,7 @@ exports.checkAndUpdatePayments = async () => {
     
     try {
         // 1. Obtener todos los números comprados
-        const [numbers] = await promisePool.query('CALL sp_GetAllPurchasedNumbers()', []);
+        const [[numbers]] = await promisePool.query('CALL sp_GetAllPurchasedNumbers()', []);
         
         // 2. Iterar sobre cada número comprado
         for (const number of numbers) {
