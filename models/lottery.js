@@ -51,7 +51,7 @@ exports.checkAndUpdatePayments = async () => {
         // 2. Iterar sobre cada número comprado
         for (const number of numbers) {
             const { id_payment } = number;
-        
+        console.log(id_payment,"id_payment");
             // 3. Consultar el estado del pago en Mercado Pago
             const url = `https://api.mercadopago.com/v1/payments/search?criteria=desc&id=${id_payment}`;
             const headers = {
