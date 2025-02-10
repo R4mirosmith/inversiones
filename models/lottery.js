@@ -75,7 +75,7 @@ exports.checkAndUpdatePayments = async () => {
                     const { status, status_detail } = payment;
                     console.log(payment);
                     // 5. Verificar si el estado no es 'approved' o 'accredited'
-                    if (status !== "approved") {
+                    if (status !== "approved" && status !== "pending") {
                         // 6. Llamar al SP para actualizar el estado
                         await promisePool.query('CALL sp_updateNumberPurchasedState(?)', [id_payment]);
                         console.log(`Estado actualizado para el pago ${id_payment}`);
