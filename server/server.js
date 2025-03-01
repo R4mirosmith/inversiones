@@ -38,7 +38,7 @@ app.use((err, req, res, next) => {
 //Load routes
 // app.use('/api/user', require('../routes/users.js'));
 // app.use('/api/login', require('../routes/login.js'));
-app.use('/api/inversiones', require('../routes/lottery.js'));
+app.use('/apinversion/inversiones', require('../routes/lottery.js'));
 // app.use('/api/categories', require('../routes/categories.js'));
 // app.use('/api/optometrist', require('../routes/optometrists.js'));
 // app.use('/api/operator', require('../routes/operator.js'));
@@ -47,7 +47,7 @@ app.use('/api/inversiones', require('../routes/lottery.js'));
 // app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
 //Base routes
-app.get('/api/welcome', (req, res) => {
+app.get('/apinversion/welcome', (req, res) => {
   res.status(200).send({
     message: 'Welcome to yumly Extension API'
   });
