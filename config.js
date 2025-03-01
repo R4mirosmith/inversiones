@@ -1,16 +1,16 @@
 module.exports = {
 
-  // PRODUCTION_DB: "lotterydb",
-  // DEVELOPMENT_DB: "lotterydb",
-  // DB_HOST: "localhost",
-  // DB_USER: "root",
-  // DB_PASSWORD:  "i(7PoNKpbsmueSqh",
-  
-  PRODUCTION_DB: "inversiones",
-  DEVELOPMENT_DB: "inversiones",
+  PRODUCTION_DB: "lotterydb",
+  DEVELOPMENT_DB: "lotterydb",
   DB_HOST: "localhost",
   DB_USER: "root",
-  DB_PASSWORD:  "",
+  DB_PASSWORD:  "i(7PoNKpbsmueSqh",
+  
+  // PRODUCTION_DB: "inversiones",
+  // DEVELOPMENT_DB: "inversiones",
+  // DB_HOST: "localhost",
+  // DB_USER: "root",
+  // DB_PASSWORD:  "",
   ENVIRONMENT: process.env.NODE_ENV || "development",
   TOKEN_SECRET: process.env.TOKEN_SECRET || "tokenultrasecreto",
   BASIC_AUTH_USER: process.env.BASIC_AUTH_USER || "xandbox",
