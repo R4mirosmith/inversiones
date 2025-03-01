@@ -1,7 +1,7 @@
 module.exports = {
 
-  PRODUCTION_DB: "lotterydb",
-  DEVELOPMENT_DB: "lotterydb",
+  PRODUCTION_DB: "inversiones",
+  DEVELOPMENT_DB: "inversiones",
   DB_HOST: "localhost",
   DB_USER: "root",
   DB_PASSWORD:  "i(7PoNKpbsmueSqh",
