@@ -1,36 +1,18 @@
 var db = require('../db/db.js');
 exports.create = async (body) => {
-    let numbers = body.number;
+    let values=[body.identification,body.nombre,body.telefono,body.estadopayment,body.idpayment,body.cantidad];
+    console.log(values,"pagosss")
     const promisePool = db.get().promise();
-    
-    // Usamos un bucle for...of para iterar y esperar cada operación asincrónica
-    for (let number of numbers) {
-        try {
-            // Esperamos a que la consulta se complete antes de continuar con el siguiente número
-            await promisePool.query('CALL sp_insert_number_lottery(?,?,?,?,?,?)', [
-                body.name, 
-                body.phone, 
-                body.email, 
-                body.lottery_id, 
-                number, 
-                body.payment_id
-            ]);
-        } catch (error) {
-            console.error("Error al insertar el número", number, error);
-            return { success: false, message: `Hubo un error al insertar el número ${number}.` };
-        }
-    }
-    return { success: true, message: 'Todos los números fueron insertados correctamente.' };
-};
+    return promisePool.query('CALL spInsertarClienteYNumeros(?,?,?,?,?,?)', values);
+}
 
 
 
 
-
-exports.getAll = (page,limit) => {
+exports.getAll = () => {
     // query database using promises
     const promisePool = db.get().promise();
-    return promisePool.query('CALL sp_GetAllPurchasedNumbers()',  [page,limit]);
+    return promisePool.query('CALL spobtenerCantidadComprada()');
 }
 exports.getlistNumbersApproved = (numbers) => {
     // query database using promises

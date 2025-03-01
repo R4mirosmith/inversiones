@@ -21,28 +21,27 @@ var router = express.Router();
 const ENVIRONMENT = config.ENVIRONMENT;
 
 
-
 ////////////////////////////////////////////////////////////////////////
 //                     Create an lottery
 ////////////////////////////////////////////////////////////////////////
 router.post('/',[
-  check('name')
-    .exists().withMessage('name is required')
-    .isLength({ min: 1, max: 255}).withMessage('Must be between 1 and 255 characters long')
+  check('identification')
+    .exists().withMessage('identification is required')
     .trim(),
-  check('phone')
-    .exists().withMessage('phone is required')
-    .isLength({ min: 1, max: 255}).withMessage('Must be between 1 and 255 characters long')
+  check('nombre')
+     .isLength({ min: 1, max: 255}).withMessage('Must be between 1 and 255 characters long')
     .trim(),
-  check('email')
-    .optional()
+  check('telefono')
+    .exists().withMessage('telefono is required')
     .trim(),
-  check('lottery_id')
-    .exists().withMessage('lottery_id is required')
+  check('cantidad')
+  .exists().withMessage('cantidad is required')
     .trim(),
-  check('number')
-    .exists().withMessage('number is required')
-    .isLength({ min: 1, max: 255}).withMessage('Must be between 1 and 255 characters long')
+  check('estadopayment')
+    .exists().withMessage('estadopayment is required')
+    .trim(),
+  check('idpayment')
+    .exists().withMessage('idpayment is required')
     .trim(),
   ],
   async (req, res) => {
@@ -58,12 +57,13 @@ router.post('/',[
       const data = matchedData(req);
 
       //Prepare data
-      if (data.name) data.name = capitalize.words(data.name.toLowerCase());
+      if (data.nombre) data.nombre = capitalize.words(data.nombre.toLowerCase());
 
       const [[[Product]]] = await lotteryModel.create(data);
       console.log(Product);
       if (!Product) return res.status(500).send(JSON.stringify({success: false,error: { code: 301, message: "Error in database", details: null}}, null, 3));
-      if (Product.result === -1) return res.status(500).send(JSON.stringify({success: false,error: {code: 301, message: "El número debe estar en el rango de 000 a 999",details: null}}, null, 3));
+      if (Product.result === -2) return res.status(500).send(JSON.stringify({success: false,error: {code: 301, message: "No continues,ya no hay numeros disponibles",details: null}}, null, 3));
+      // if (Product.result === -1) return res.status(500).send(JSON.stringify({success: false,error: {code: 301, message: "El número debe estar en el rango de 000 a 999",details: null}}, null, 3));
 
       return res.status(200).send(JSON.stringify({success: true,data: {product: Product.result}}, null, 3));
     } catch (err) {
@@ -72,66 +72,160 @@ router.post('/',[
     }
 });
 
+
+////////////////////////////////////////////////////////////////////////
+//                Get list of all Jornadas
+////////////////////////////////////////////////////////////////////////
+router.get('/comprados', 
+  async(req,res) => { try {
+    res.setHeader('Content-Type', 'application/json');
+    log.logger.info(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":""}`);
+    
+    //Handle validations errors
+    var errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).send(JSON.stringify({success:false,error:{code:201, message:"Request has invalid data",details:errors.mapped()}}, null, 3));
+    
+    //Get matched data
+    const data = matchedData(req); 
+  
+  
+    //Getting Jornadas
+    const [[cantidad]] = await lotteryModel.getAll();
+    if(!cantidad) return res.status(500).send(JSON.stringify({success:false,error:{code:301,message:"Error in database", details:null}}, null, 3));
+    if(cantidad.length===0) return res.status(200).send(JSON.stringify({success:true,data:{count:cantidad.count,numbers:cantidad}}, null, 3));
+  
+    
+    return res.status(200).send(JSON.stringify({success:true,data:{count:cantidad[0].total,cantidad:cantidad}}, null, 3));}
+  catch(err){
+    log.logger.error(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":"", "error":"${err}"}`);
+    return res.status(500).send(JSON.stringify({success:false,error:{code:301,message:"Error in service or database", details:err}}, null, 3));
+  }});
+
 // Ruta para manejar el pago
 router.post('/pago', async (req, res) => {
+  try {
+      const client = new mercadopago.MercadoPagoConfig({ accessToken: 'TEST-2917508713925163-090511-ae37c31035e11e7a997d066b7adb1cb7-158826293' });
+      const payment = new mercadopago.Payment(client);
 
-    const client = new mercadopago.MercadoPagoConfig({ accessToken: 'APP_USR-1982257925213143-090321-3a3945505bbc4ca2a56a702358765802-1955976988' });
-    const payment = new mercadopago.Payment(client);
+      const { nombre, identification, telefono, email, banco_id, cantidad } = req.body;
 
-  const { name, number, phone, email,bank } = req.body;
+      console.log(req.body, "***");
 
-  console.log(number,"***")
-  // Verifica si los datos necesarios están presentes
-  if (phone && name && number && email,bank && number.length > 0) {
-     let name_capitalize = capitalize.words(name.toLowerCase());
+      // Verifica si los datos necesarios están presentes
+      if (telefono && nombre && identification && email && banco_id && cantidad > 0) {
+          let name_capitalize = capitalize.words(nombre.toLowerCase());
 
-    // Crear un objeto de pago
-    const body  = {
-      description: `Compra de ${number.length} números del sorteo`,
-      transaction_amount: 10000 * number.length,
-      payment_method_id: "pse", // Asumiendo que usas PSE
-      additional_info: {
-        ip_address: "127.0.0.1",
-      },
-      transaction_details: {
-        financial_institution: bank,
-      },
-      callback_url: "https://meliticoyricolino.inletsoft.com/", // Reemplazar con tu URL de callback real
-      payer: {
-        first_name: name_capitalize,
-        last_name: name_capitalize,
-        email: email,
-        identification: {
-          type: "CC",
-          number: "19119119100"
-        },
-        entity_type: "individual"
-      },
-    };
+          // Crear un objeto de pago
+          const body = {
+              description: `Compra de ${cantidad} números.`,
+              transaction_amount: 35000 * cantidad,
+              payment_method_id: "pse", // Asumiendo que usas PSE
+              additional_info: {
+                  ip_address: "127.0.0.1",
+              },
+              transaction_details: {
+                  financial_institution: banco_id,
+              },
+              callback_url: "https://inversionesad.inletsoft.com/", // Reemplazar con tu URL de callback real
+              payer: {
+                  first_name: name_capitalize,
+                  last_name: name_capitalize,
+                  email: email,
+                  identification: {
+                      type: "CC",
+                      number: identification
+                  },
+                  entity_type: "individual"
+              },
+          };
 
-    // Generar un ID único para el idempotency key
-    const idempotencyKey = Date.now().toString(); // Generar un idempotency key único
-    const requestOptions = {
-        idempotencyKey:idempotencyKey,
-    };
-    // Añadir el idempotency key
-    let paymentResponse = await payment.create({body, requestOptions})
-    let payment_id = paymentResponse.id;
-    let lottery_id = 1;
-    console.log(paymentResponse,"paymentResponse*********************")
-    const Product = await lotteryModel.create({ name, phone, email,lottery_id,number,payment_id});
-    console.log(Product,"Product*********************")
+          // Generar un ID único para el idempotency key
+          const idempotencyKey = Date.now().toString(); // Generar un idempotency key único
+          const requestOptions = {
+              idempotencyKey: idempotencyKey,
+          };
 
-    if (!Product) return res.status(500).send(JSON.stringify({success: false,error: { code: 301, message: "Error in database", details: null}}, null, 3));
-    if (Product.result === -1) return res.status(500).send(JSON.stringify({success: false,error: {code: 301, message: "El número debe estar en el rango de 000 a 999",details: null}}, null, 3));
-    return res.status(200).send(JSON.stringify({success: true,data: {response: paymentResponse}}, null, 3));
+          // Intentar crear el pago
+          let paymentResponse = await payment.create({ body, requestOptions });
+          let idpayment = paymentResponse.id;
+          let estadopayment = paymentResponse.status;
+          console.log(idpayment, "paymentResponse*********************");
+          // console.log(paymentResponse, "paymentResponse*********************");
 
-  } else {
-    // Respuesta de error si los datos no están completos
-    return res.status(400).json({
-      status: 'error',
-      message: 'Datos incompletos'
-    });
+          // Intentar crear el producto
+          const Product = await lotteryModel.create({ identification,nombre,telefono,estadopayment,idpayment,cantidad});
+          console.log(Product, "Product*********************");
+
+          if (!Product) {
+              return res.status(500).send(JSON.stringify({ success: false, error: { code: 301, message: "Error en la base de datos", details: null } }, null, 3));
+          }
+          if (Product.result === -1) {
+              return res.status(500).send(JSON.stringify({ success: false, error: { code: 301, message: "El número debe estar en el rango de 000 a 999", details: null } }, null, 3));
+          }
+
+          return res.status(200).send(JSON.stringify({ success: true, data: { response: paymentResponse } }, null, 3));
+      } else {
+          // Respuesta de error si los datos no están completos
+          return res.status(400).json({
+              status: 'error',
+              message: 'Datos incompletos'
+          });
+      }
+
+  } catch (error) {
+      // Captura cualquier error inesperado en la operación
+      console.error("Error al procesar la solicitud de pago:", error);
+      return res.status(500).json({
+          status: 'error',
+          message: 'Hubo un error al procesar la solicitud de pago',
+          details: error.message || error
+      });
+  }
+});
+
+// Endpoint para recibir las notificaciones del Webhook de MercadoPago
+router.post('/webhook', async (req, res) => {
+  try {
+    const paymentId = req.body.data.id;  // MercadoPago nos envía el ID de pago
+    console.log('Notificación recibida: ', req.body);
+
+    // Recupera el estado del pago desde la API de MercadoPago
+    let paymentResponse = await mercadopago.payment.get(paymentId);
+    const paymentStatus = paymentResponse.body.status;
+    console.log('Estado del pago:', paymentStatus);
+
+    // Aquí se pueden agregar validaciones de acuerdo con el estado del pago.
+    switch (paymentStatus) {
+      case 'approved':
+        // El pago fue aprobado
+        console.log('Pago aprobado');
+        // Actualiza el estado de la transacción en la base de datos
+        await lotteryModel.update({ idpayment: paymentId }, { estadopayment: 'approved' });
+        break;
+      case 'rejected':
+        // El pago fue rechazado
+        console.log('Pago rechazado');
+        await lotteryModel.update({ idpayment: paymentId }, { estadopayment: 'rejected' });
+        break;
+      case 'pending':
+        // El pago está pendiente
+        console.log('Pago pendiente');
+        await lotteryModel.update({ idpayment: paymentId }, { estadopayment: 'pending' });
+        break;
+      case 'in_process':
+        // El pago está en proceso
+        console.log('Pago en proceso');
+        await lotteryModel.update({ idpayment: paymentId }, { estadopayment: 'in_process' });
+        break;
+      default:
+        console.log('Estado no manejado:', paymentStatus);
+    }
+
+    // Responder con OK a MercadoPago
+    res.status(200).send('OK');
+  } catch (error) {
+    console.error('Error al procesar la notificación del webhook:', error);
+    res.status(500).send('Error al procesar la notificación');
   }
 });
 

@@ -38,7 +38,7 @@ app.use((err, req, res, next) => {
 //Load routes
 // app.use('/api/user', require('../routes/users.js'));
 // app.use('/api/login', require('../routes/login.js'));
-app.use('/api/lottery', require('../routes/lottery.js'));
+app.use('/api/inversiones', require('../routes/lottery.js'));
 // app.use('/api/categories', require('../routes/categories.js'));
 // app.use('/api/optometrist', require('../routes/optometrists.js'));
 // app.use('/api/operator', require('../routes/operator.js'));
