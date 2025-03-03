@@ -207,9 +207,10 @@ router.post('/webhook', async (req, res) => {
           console.log(status);
           console.log(status_detail);
           // 5. Verificar si el estado no es 'approved' o 'accredited'
-          if (status !== "approved" && status !== "pending") {
+          if (status == "approved" && status_detail == "accredited") {
+              console.log(`El pago ${paymentId} está aprobado y acreditado.`);
               // 6. Llamar al SP para actualizar el estado
-              // await promisePool.query('CALL sp_updateNumberPurchasedState(?)', [id_payment]);
+              await promisePool.query('CALL actualizar_estado_payment(?,?)', [paymentId, status]);
               // console.log(`Estado actualizado para el pago ${id_payment}`);
           } else {
               console.log(`El pago ${paymentId} está aprobado y acreditado.`);
