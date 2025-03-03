@@ -211,6 +211,8 @@ router.post('/webhook', async (req, res) => {
           // 5. Verificar si el estado no es 'approved' o 'accredited'
           if (status == "approved" && status_detail == "accredited") {
               console.log(`El pago ${paymentId} está aprobado y acreditado.`);
+              globalThis.Headers = require('node-fetch').Headers;
+              globalThis.fetch = require('node-fetch');
               const resend = new Resend('re_3G8p1JaW_Nmvs5YEQuNg44hfHdTsSifh3');
               (async function () {
                 const { data, error } = await resend.emails.send({
