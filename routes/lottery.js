@@ -1,4 +1,5 @@
 var express = require('express');
+const axios = require('axios');
 var lotteryModel = require('../models/lottery.js');
 var userModel = require('../models/users');
 const nodemailer = require("nodemailer");
@@ -187,10 +188,42 @@ router.post('/pago', async (req, res) => {
 // Endpoint para recibir las notificaciones del Webhook de MercadoPago
 router.post('/webhook', async (req, res) => {
   try {
+    const paymentId = req.body.data.id;  // MercadoPago nos envía el ID de pago
+      const url = `https://api.mercadopago.com/v1/payments/search?&id=${paymentId}`;
+      const headers = {
+        Authorization: `Bearer TEST-0994b6e6-b435-4ca3-bd06-598ec2d0a598`,  // Usa tu token de acceso de Mercado Pago
+    };
 
     console.log('Notificación recibida: ', req.body);
-    // Responder con OK a MercadoPago
-    return res.status(200).send(JSON.stringify({ success: true, data: { response: req.body } }, null, 3));
+
+    // Aquí se pueden agregar validaciones de acuerdo con el estado del pago.
+    try {
+      // 4. Hacer la solicitud para obtener el estado del pago
+      const response = await axios.get(url, { headers });
+      const payment = response.data.results[0];
+      console.log(payment,"*******INFO PAGO******");
+      if (payment) {
+          const { status, status_detail } = payment;
+          console.log(status);
+          console.log(status_detail);
+          // 5. Verificar si el estado no es 'approved' o 'accredited'
+          if (status !== "approved" && status !== "pending") {
+              // 6. Llamar al SP para actualizar el estado
+              // await promisePool.query('CALL sp_updateNumberPurchasedState(?)', [id_payment]);
+              // console.log(`Estado actualizado para el pago ${id_payment}`);
+          } else {
+              console.log(`El pago ${paymentId} está aprobado y acreditado.`);
+          }
+            // Responder con OK a MercadoPago
+          return res.status(200).send(JSON.stringify({ success: true, data: { response: payment } }, null, 3));
+      } else {
+          console.log(`No se encontraron datos de pago para el ID ${paymentId}`);
+      }
+  } catch (error) {
+      console.error(`Error al consultar el estado del pago ${paymentId}:`, error);
+  }
+
+  
   } catch (error) {
     console.error('Error al procesar la notificación del webhook:', error);
     res.status(500).send('Error al procesar la notificación');
