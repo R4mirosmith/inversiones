@@ -20,7 +20,7 @@ var config = require('../config.js');
 var router = express.Router();
 
 const ENVIRONMENT = config.ENVIRONMENT;
-// const resend = new Resend('re_123456789');
+const resend = new Resend('re_123456789');
 
 ////////////////////////////////////////////////////////////////////////
 //                     Create an lottery
