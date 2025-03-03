@@ -210,6 +210,20 @@ router.post('/webhook', async (req, res) => {
           if (status == "approved" && status_detail == "accredited") {
               console.log(`El pago ${paymentId} está aprobado y acreditado.`);
               const resend = new Resend('re_123456789');
+              (async function () {
+                const { data, error } = await resend.emails.send({
+                  from: 'Acme <onboarding@resend.dev>',
+                  to: ['msr.ramiro@gmail.com'],
+                  subject: 'Hello World',
+                  html: '<strong>It works!</strong>',
+                });
+              
+                if (error) {
+                  return console.error({ error });
+                }
+              
+                console.log({ data });
+              })();
               // 6. Llamar al SP para actualizar el estado
                await lotteryModel.updateState(paymentId,status);
               // console.log(`Estado actualizado para el pago ${id_payment}`);
