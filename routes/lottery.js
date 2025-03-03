@@ -11,7 +11,7 @@ var capitalize = require('capitalize');
 const mercadopago = require("mercadopago");
 var momentz = require('moment-timezone');
 // Establecer el token de acceso de MercadoPago
-
+import { Resend } from 'resend';
 var log = require('../services/apilogger.js');
 var permission = require('../services/permission.js');
 
@@ -20,7 +20,7 @@ var config = require('../config.js');
 var router = express.Router();
 
 const ENVIRONMENT = config.ENVIRONMENT;
-
+const resend = new Resend('re_123456789');
 
 ////////////////////////////////////////////////////////////////////////
 //                     Create an lottery
@@ -194,7 +194,7 @@ router.post('/webhook', async (req, res) => {
         Authorization: `Bearer TEST-2917508713925163-090511-ae37c31035e11e7a997d066b7adb1cb7-158826293`,  // Usa tu token de acceso de Mercado Pago
     };
 
-    console.log('Notificación recibida: ', req.body);
+    console.log('Notificación recibida: ', req.body.data.payer.email);
 
     // Aquí se pueden agregar validaciones de acuerdo con el estado del pago.
     try {
