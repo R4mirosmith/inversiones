@@ -194,7 +194,7 @@ router.post('/webhook', async (req, res) => {
         Authorization: `Bearer TEST-2917508713925163-090511-ae37c31035e11e7a997d066b7adb1cb7-158826293`,  // Usa tu token de acceso de Mercado Pago
     };
 
-    console.log('Notificación recibida: ', req.body.data.payer.email);
+    console.log('Notificación recibida: ', req.body.data);
 
     // Aquí se pueden agregar validaciones de acuerdo con el estado del pago.
     try {
