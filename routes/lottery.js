@@ -211,23 +211,31 @@ router.post('/webhook', async (req, res) => {
           // 5. Verificar si el estado no es 'approved' o 'accredited'
           if (status == "approved" && status_detail == "accredited") {
               console.log(`El pago ${paymentId} está aprobado y acreditado.`);
-              globalThis.Headers = require('node-fetch').Headers;
-              globalThis.fetch = require('node-fetch');
-              const resend = new Resend('re_3G8p1JaW_Nmvs5YEQuNg44hfHdTsSifh3');
-              (async function () {
+              const { Resend } = require('resend');
+
+              (async () => {
+                // Importación dinámica de node-fetch solo para evitar el error
+                const { default: fetch, Headers } = await import('node-fetch');
+
+                globalThis.fetch = fetch;
+                globalThis.Headers = Headers;
+
+                const resend = new Resend('re_3G8p1JaW_Nmvs5YEQuNg44hfHdTsSifh3');
+
                 const { data, error } = await resend.emails.send({
                   from: 'Acme <onboarding@resend.dev>',
-                  to: ['msr.ramiro@gmail.com'],
+                  to: ['delivered@resend.dev'],
                   subject: 'Hello World',
                   html: '<strong>It works!</strong>',
                 });
-              
+
                 if (error) {
                   return console.error({ error });
                 }
-              
+
                 console.log({ data });
               })();
+
               // 6. Llamar al SP para actualizar el estado
                await lotteryModel.updateState(paymentId,status);
               // console.log(`Estado actualizado para el pago ${id_payment}`);
