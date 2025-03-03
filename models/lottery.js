@@ -75,7 +75,7 @@ exports.checkAndUpdatePayments = async () => {
         console.error('Error al obtener los números comprados:', error);
     }
 };
-exports.updateState = async (id,status) => {
+exports.updateState = async (paymentId,status) => {
     const promisePool = db.get().promise();
     await promisePool.query('CALL actualizar_estado_payment(?,?)', [paymentId, status]);
 }
