@@ -11,7 +11,7 @@ var capitalize = require('capitalize');
 const mercadopago = require("mercadopago");
 var momentz = require('moment-timezone');
 // Establecer el token de acceso de MercadoPago
-// const { Resend } = require('resend');
+const { Resend } = require('resend');
 var log = require('../services/apilogger.js');
 var permission = require('../services/permission.js');
 
