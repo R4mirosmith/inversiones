@@ -201,7 +201,9 @@ router.post('/webhook', async (req, res) => {
       // 4. Hacer la solicitud para obtener el estado del pago
       const response = await axios.get(url, { headers });
       const payment = response.data.results[0];
-      console.log(payment,"*******INFO PAGO******");
+      console.log("///////////////////////////////////////");
+      console.log(payment);
+      console.log("///////////////////////////////////////");
       if (payment) {
           const { status, status_detail } = payment;
           console.log(status);
@@ -209,7 +211,7 @@ router.post('/webhook', async (req, res) => {
           // 5. Verificar si el estado no es 'approved' o 'accredited'
           if (status == "approved" && status_detail == "accredited") {
               console.log(`El pago ${paymentId} está aprobado y acreditado.`);
-              const resend = new Resend('re_123456789');
+              const resend = new Resend('re_3G8p1JaW_Nmvs5YEQuNg44hfHdTsSifh3');
               (async function () {
                 const { data, error } = await resend.emails.send({
                   from: 'Acme <onboarding@resend.dev>',
