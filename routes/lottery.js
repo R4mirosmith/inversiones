@@ -210,7 +210,7 @@ router.post('/webhook', async (req, res) => {
           if (status == "approved" && status_detail == "accredited") {
               console.log(`El pago ${paymentId} está aprobado y acreditado.`);
               // 6. Llamar al SP para actualizar el estado
-              await promisePool.query('CALL actualizar_estado_payment(?,?)', [paymentId, status]);
+               await lotteryModel.updateState(paymentId,status);
               // console.log(`Estado actualizado para el pago ${id_payment}`);
           } else {
               console.log(`El pago ${paymentId} está aprobado y acreditado.`);
