@@ -49,7 +49,7 @@ app.use('/apinversion/inversiones', require('../routes/lottery.js'));
 //Base routes
 app.get('/apinversion/welcome', (req, res) => {
   res.status(200).send({
-    message: 'Welcome to yumly Extension API'
+    message: 'Welcome to inversiones Extension API'
   });
 });
 

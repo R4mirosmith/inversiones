@@ -137,6 +137,7 @@ router.post('/pago', async (req, res) => {
                   },
                   entity_type: "individual"
               },
+              notification_url: "https://appmagdalena.net/apinversion/inversiones/webhook" // Reemplazar con tu URL de webhook real
           };
 
           // Generar un ID único para el idempotency key
@@ -186,43 +187,10 @@ router.post('/pago', async (req, res) => {
 // Endpoint para recibir las notificaciones del Webhook de MercadoPago
 router.post('/webhook', async (req, res) => {
   try {
-    const paymentId = req.body.data.id;  // MercadoPago nos envía el ID de pago
+
     console.log('Notificación recibida: ', req.body);
-
-    // Recupera el estado del pago desde la API de MercadoPago
-    let paymentResponse = await mercadopago.payment.get(paymentId);
-    const paymentStatus = paymentResponse.body.status;
-    console.log('Estado del pago:', paymentStatus);
-
-    // Aquí se pueden agregar validaciones de acuerdo con el estado del pago.
-    switch (paymentStatus) {
-      case 'approved':
-        // El pago fue aprobado
-        console.log('Pago aprobado');
-        // Actualiza el estado de la transacción en la base de datos
-        await lotteryModel.update({ idpayment: paymentId }, { estadopayment: 'approved' });
-        break;
-      case 'rejected':
-        // El pago fue rechazado
-        console.log('Pago rechazado');
-        await lotteryModel.update({ idpayment: paymentId }, { estadopayment: 'rejected' });
-        break;
-      case 'pending':
-        // El pago está pendiente
-        console.log('Pago pendiente');
-        await lotteryModel.update({ idpayment: paymentId }, { estadopayment: 'pending' });
-        break;
-      case 'in_process':
-        // El pago está en proceso
-        console.log('Pago en proceso');
-        await lotteryModel.update({ idpayment: paymentId }, { estadopayment: 'in_process' });
-        break;
-      default:
-        console.log('Estado no manejado:', paymentStatus);
-    }
-
     // Responder con OK a MercadoPago
-    res.status(200).send('OK');
+    return res.status(200).send(JSON.stringify({ success: true, data: { response: req.body } }, null, 3));
   } catch (error) {
     console.error('Error al procesar la notificación del webhook:', error);
     res.status(500).send('Error al procesar la notificación');
