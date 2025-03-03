@@ -223,7 +223,7 @@ router.post('/webhook', async (req, res) => {
                 const resend = new Resend('re_3G8p1JaW_Nmvs5YEQuNg44hfHdTsSifh3');
 
                 const { data, error } = await resend.emails.send({
-                  from: 'Acme <inversiones@inletsoft.com/>',
+                  from: 'Acme <inversiones@inversionesad.inletsoft.com>',
                   to: ['msr.ramiro@gmail.com'],
                   subject: 'Hello World smith',
                   html: '<strong>It works!</strong>',
