@@ -20,7 +20,7 @@ var config = require('../config.js');
 var router = express.Router();
 
 const ENVIRONMENT = config.ENVIRONMENT;
-const resend = new Resend('re_123456789');
+
 
 ////////////////////////////////////////////////////////////////////////
 //                     Create an lottery
@@ -209,6 +209,7 @@ router.post('/webhook', async (req, res) => {
           // 5. Verificar si el estado no es 'approved' o 'accredited'
           if (status == "approved" && status_detail == "accredited") {
               console.log(`El pago ${paymentId} está aprobado y acreditado.`);
+              const resend = new Resend('re_123456789');
               // 6. Llamar al SP para actualizar el estado
                await lotteryModel.updateState(paymentId,status);
               // console.log(`Estado actualizado para el pago ${id_payment}`);
