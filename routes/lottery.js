@@ -140,6 +140,7 @@ router.post('/pago', async (req, res) => {
               },
               notification_url: "https://appmagdalena.net/apinversion/inversiones/webhook" // Reemplazar con tu URL de webhook real
           };
+          console.log(body, "body*********************");
 
           // Generar un ID único para el idempotency key
           const idempotencyKey = Date.now().toString(); // Generar un idempotency key único
@@ -151,19 +152,19 @@ router.post('/pago', async (req, res) => {
           let paymentResponse = await payment.create({ body, requestOptions });
           let idpayment = paymentResponse.id;
           let estadopayment = paymentResponse.status;
-          console.log(idpayment, "paymentResponse*********************");
-          // console.log(paymentResponse, "paymentResponse*********************");
+          // console.log(idpayment, "paymentResponse*********************");
+          console.log(paymentResponse, "paymentResponse*********************");
 
           // Intentar crear el producto
-          const Product = await lotteryModel.create({ identification,nombre,telefono,estadopayment,idpayment,cantidad});
-          console.log(Product, "Product*********************");
+          // const Product = await lotteryModel.create({ identification,nombre,telefono,estadopayment,idpayment,cantidad});
+          // console.log(Product, "Product*********************");
 
-          if (!Product) {
-              return res.status(500).send(JSON.stringify({ success: false, error: { code: 301, message: "Error en la base de datos", details: null } }, null, 3));
-          }
-          if (Product.result === -1) {
-              return res.status(500).send(JSON.stringify({ success: false, error: { code: 301, message: "El número debe estar en el rango de 000 a 999", details: null } }, null, 3));
-          }
+          // if (!Product) {
+          //     return res.status(500).send(JSON.stringify({ success: false, error: { code: 301, message: "Error en la base de datos", details: null } }, null, 3));
+          // }
+          // if (Product.result === -1) {
+          //     return res.status(500).send(JSON.stringify({ success: false, error: { code: 301, message: "El número debe estar en el rango de 000 a 999", details: null } }, null, 3));
+          // }
 
           return res.status(200).send(JSON.stringify({ success: true, data: { response: paymentResponse } }, null, 3));
       } else {
