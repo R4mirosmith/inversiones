@@ -145,10 +145,10 @@ router.post('/pago', async (req, res) => {
               transaction_details: {
                   financial_institution: banco_id,
               },
-              notification_url: "https://appmagdalena.net/apinversion/inversiones/webhook?body="+JSON.stringify(req.body), // Reemplazar con tu URL de webhook real
+              notification_url: "https://appmagdalena.net/apinversion/inversiones/webhook?body="+JSON.stringify( { nombre, identification, telefono, email, cantidad } ), // Reemplazar con tu URL de webhook real
             
           };
-          console.log(body, "body*********************");
+          // console.log(body, "body*********************");
 
           // Generar un ID único para el idempotency key
           const idempotencyKey = Date.now().toString(); // Generar un idempotency key único
@@ -197,6 +197,9 @@ router.post('/pago', async (req, res) => {
 // Endpoint para recibir las notificaciones del Webhook de MercadoPago
 router.post('/webhook', async (req, res) => {
   try {
+
+    let body = JSON.parse(req.query.body);
+
     // Primero intentamos obtener el paymentId desde req.body.data.id
     let paymentId = req.body.data ? req.body.data.id : null;
 
@@ -204,10 +207,11 @@ router.post('/webhook', async (req, res) => {
     if (!paymentId && req.body.resource) {
        paymentId = req.body.resource; // Usamos el valor de 'resource' como paymentId
     }
+    body.paymentId = paymentId;
+    const { identification, nombre,telefono,email,cantidad,idpayment } = body;
     // console.log(paymentId, "webhook*********************");
-    console.log(JSON.parse(req.query.body), "req.query*********************");
     // console.log(req.body.data.id, "req.body.id*********************");
-      const url = `https://api.mercadopago.com/v1/payments/search?&id=${paymentId}`;
+      const url = `https://api.mercadopago.com/v1/payments/search?&id=${idpayment}`;
       const headers = {
         Authorization: `Bearer APP_USR-1720038210969834-031116-5cb0590b9a1ceaa3381d37d8ddfcf897-2322508646`,  // Usa tu token de acceso de Mercado Pago
     };
@@ -219,11 +223,13 @@ router.post('/webhook', async (req, res) => {
       // 4. Hacer la solicitud para obtener el estado del pago
       const response = await axios.get(url, { headers });
       const payment = response.data.results[0];
+
       // console.log("//////////////////payment/////////////////////");
       // console.log(payment);
       // console.log("///////////////////////////////////////");
       if (payment) {
           const { status, status_detail } = payment;
+         
           // console.log(req.body, "webhook*********************");
           // console.log(status);
           // console.log(status_detail);
