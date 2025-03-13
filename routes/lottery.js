@@ -130,7 +130,7 @@ router.post('/pago', async (req, res) => {
                 email: 'msr.ramiro@gmail.com',
                 identification: {
                     type: "CC",
-                    number: identification
+                    number: 1042445583
                 },
 
             },
