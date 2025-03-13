@@ -114,7 +114,7 @@ router.post('/pago', async (req, res) => {
 
       // Verifica si los datos necesarios están presentes
       if (telefono && nombre && identification && email && banco_id && cantidad > 0) {
-          let name_capitalize = capitalize.words(req.body.nombre.toLowerCase());
+          let name_capitalize = capitalize.words(nombre.toLowerCase());
 
           // Crear un objeto de pago
           const body = {
@@ -125,12 +125,11 @@ router.post('/pago', async (req, res) => {
               notification_url: "https://appmagdalena.net/apinversion/inversiones/webhook", // Reemplazar con tu URL de webhook real
               payer: {
                 entity_type: "individual",
-                first_name: "ramiro",
-                last_name: "angarita",
-                email: 'msr.ramiro@gmail.com',
+                first_name: nombre,
+                email: email,
                 identification: {
                     type: "CC",
-                    number: 1042445583
+                    number: identification
                 },
 
             },
