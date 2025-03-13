@@ -209,7 +209,7 @@ router.post('/webhook', async (req, res) => {
       const response = await axios.get(url, { headers });
       const payment = response.data.results[0];
       console.log("//////////////////payment/////////////////////");
-      console.log(payment);
+      console.log(response);
       console.log("///////////////////////////////////////");
       if (payment) {
           const { status, status_detail } = payment;
