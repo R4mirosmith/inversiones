@@ -117,18 +117,7 @@ router.post('/pago', async (req, res) => {
           let name_capitalize = capitalize.words(nombre.toLowerCase());
 
           // Crear un objeto de pago
-     
-          // console.log(body, "body*********************");
-
-          // Generar un ID único para el idempotency key
-          const idempotencyKey = Date.now().toString(); // Generar un idempotency key único
-          const requestOptions = {
-              idempotencyKey: idempotencyKey,
-          };
-
-          // Intentar crear el pago
-          let paymentResponse = await payment.create(
-            {
+          const body = {
               description: `Compra de ${cantidad} números.`,
               transaction_amount: 35000 * cantidad,
               payment_method_id: "pse", // Asumiendo que usas PSE
@@ -159,8 +148,17 @@ router.post('/pago', async (req, res) => {
               },
 
             
-          }
-           , requestOptions);
+          };
+          // console.log(body, "body*********************");
+
+          // Generar un ID único para el idempotency key
+          const idempotencyKey = Date.now().toString(); // Generar un idempotency key único
+          const requestOptions = {
+              idempotencyKey: idempotencyKey,
+          };
+
+          // Intentar crear el pago
+          let paymentResponse = await payment.create({ body, requestOptions });
           let idpayment = paymentResponse.id;
           let estadopayment = paymentResponse.status;
           console.log(idpayment, "paymentResponse*********************");
