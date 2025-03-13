@@ -105,7 +105,7 @@ router.get('/comprados',
 // Ruta para manejar el pago
 router.post('/pago', async (req, res) => {
   try {
-      const client = new mercadopago.MercadoPagoConfig({ accessToken: 'TEST-2917508713925163-090511-ae37c31035e11e7a997d066b7adb1cb7-158826293' });
+      const client = new mercadopago.MercadoPagoConfig({ accessToken: 'APP_USR-1720038210969834-031116-5cb0590b9a1ceaa3381d37d8ddfcf897-2322508646' });
       const payment = new mercadopago.Payment(client);
 
       const { nombre, identification, telefono, email, banco_id, cantidad } = req.body;
