@@ -3,7 +3,7 @@ const axios = require('axios');
 var lotteryModel = require('../models/lottery.js');
 var userModel = require('../models/users');
 const nodemailer = require("nodemailer");
-var {check,validationResult} = require('express-validator');
+var {check,validationResult, body} = require('express-validator');
 var {matchedData,sanitize} = require('express-validator');
 const { v4: uuidv4 } = require('uuid');
 var jwt = require('../services/jwt.js');
@@ -115,14 +115,13 @@ router.post('/pago', async (req, res) => {
       // Verifica si los datos necesarios están presentes
       if (telefono && nombre && identification && email && banco_id && cantidad > 0) {
           let name_capitalize = capitalize.words(nombre.toLowerCase());
-
+          
           // Crear un objeto de pago
           const body = {
               description: `Compra de ${cantidad} números.`,
               transaction_amount: 35000 * cantidad,
               payment_method_id: "pse", // Asumiendo que usas PSE
               callback_url: "https://inversionesad.inletsoft.com/", // Reemplazar con tu URL de callback real
-              notification_url: "https://appmagdalena.net/apinversion/inversiones/webhook", // Reemplazar con tu URL de webhook real
               payer: {
                 entity_type: "individual",
                 first_name: name_capitalize,
@@ -146,7 +145,7 @@ router.post('/pago', async (req, res) => {
               transaction_details: {
                   financial_institution: banco_id,
               },
-
+              notification_url: "https://appmagdalena.net/apinversion/inversiones/webhook?body="+JSON.stringify(req.body), // Reemplazar con tu URL de webhook real
             
           };
           // console.log(body, "body*********************");
@@ -230,7 +229,15 @@ router.post('/webhook', async (req, res) => {
           // console.log(status_detail);
           // 5. Verificar si el estado no es 'approved' o 'accredited'
           if (status == "approved" && status_detail == "accredited") {
-              console.log(`El pago ${paymentId} está aprobado y acreditado.`);
+
+            // Intentar crear el producto
+                  const Response = await lotteryModel.create({ identification,nombre,telefono,estadopayment,paymentId,cantidad});
+                  console.log(Response, "Response*********************");
+
+                  if (!Response) {
+                      return res.status(500).send(JSON.stringify({ success: false, error: { code: 301, message: "Error en la base de datos", details: null } }, null, 3));
+                  }
+                  console.log(`El pago ${paymentId} está aprobado y acreditado.`);
               const { Resend } = require('resend');
 
               (async () => {
@@ -256,8 +263,7 @@ router.post('/webhook', async (req, res) => {
                 console.log({ data });
               })();
 
-              // 6. Llamar al SP para actualizar el estado
-               await lotteryModel.updateState(paymentId,status);
+
               // console.log(`Estado actualizado para el pago ${id_payment}`);
           } else {
               // console.log(`El pago ${paymentId} está aprobado y acreditado.`);
