@@ -195,6 +195,7 @@ router.post('/pago', async (req, res) => {
           // Llamamos al procedimiento almacenado spobtenerCantidadComprada para obtener la cantidad de números comprados hasta ahora
           const [[cantidadComprada]] = await lotteryModel.getAll() // Aquí deberías llamar a tu SP, que debería retornar la cantidad comprada actual
           
+          console.log(cantidadComprada)
           const limite = 1000;
           const cantidadDisponible = limite - cantidadComprada;
           
