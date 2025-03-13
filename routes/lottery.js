@@ -205,7 +205,7 @@ router.post('/webhook', async (req, res) => {
        paymentId = req.body.resource; // Usamos el valor de 'resource' como paymentId
     }
     // console.log(paymentId, "webhook*********************");
-    console.log(req.query, "req.params*********************");
+    console.log(JSON.parse(req.query.body), "req.query*********************");
     // console.log(req.body.data.id, "req.body.id*********************");
       const url = `https://api.mercadopago.com/v1/payments/search?&id=${paymentId}`;
       const headers = {
@@ -232,7 +232,7 @@ router.post('/webhook', async (req, res) => {
 
             // Intentar crear el producto
                   const Response = await lotteryModel.create({ identification,nombre,telefono,estadopayment,paymentId,cantidad});
-                  console.log(Response, "Response*********************");
+                  // console.log(Response, "Response*********************");
 
                   if (!Response) {
                       return res.status(500).send(JSON.stringify({ success: false, error: { code: 301, message: "Error en la base de datos", details: null } }, null, 3));
