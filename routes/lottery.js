@@ -230,9 +230,9 @@ router.post('/webhook', async (req, res) => {
       if (payment) {
           const { status, status_detail } = payment;
          
-          // console.log(req.body, "webhook*********************");
-          // console.log(status);
-          // console.log(status_detail);
+          console.log(req.body, "webhook*********************");
+          console.log(status);
+          console.log(status_detail);
           // 5. Verificar si el estado no es 'approved' o 'accredited'
           if (status == "approved" && status_detail == "accredited") {
 
