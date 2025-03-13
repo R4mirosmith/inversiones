@@ -144,7 +144,7 @@ router.post('/pago', async (req, res) => {
 
             
           };
-          console.log(body, "body*********************");
+          // console.log(body, "body*********************");
 
           // Generar un ID único para el idempotency key
           const idempotencyKey = Date.now().toString(); // Generar un idempotency key único
@@ -200,8 +200,8 @@ router.post('/webhook', async (req, res) => {
     if (!paymentId && req.body.resource) {
        paymentId = req.body.resource; // Usamos el valor de 'resource' como paymentId
     }
-    console.log(paymentId, "webhook*********************");
-    console.log(req.body, "webhook*********************");
+    // console.log(paymentId, "webhook*********************");
+    // console.log(req.body, "webhook*********************");
     // console.log(req.body.data.id, "req.body.id*********************");
       const url = `https://api.mercadopago.com/v1/payments/search?&id=${paymentId}`;
       const headers = {
@@ -215,13 +215,13 @@ router.post('/webhook', async (req, res) => {
       // 4. Hacer la solicitud para obtener el estado del pago
       const response = await axios.get(url, { headers });
       const payment = response.data.results[0];
-      // console.log("//////////////////payment/////////////////////");
-      // console.log(response.data);
-      // console.log("///////////////////////////////////////");
+      console.log("//////////////////payment/////////////////////");
+      console.log(payment);
+      console.log("///////////////////////////////////////");
       if (payment) {
           const { status, status_detail } = payment;
-          console.log(status);
-          console.log(status_detail);
+          // console.log(status);
+          // console.log(status_detail);
           // 5. Verificar si el estado no es 'approved' o 'accredited'
           if (status == "approved" && status_detail == "accredited") {
               console.log(`El pago ${paymentId} está aprobado y acreditado.`);
