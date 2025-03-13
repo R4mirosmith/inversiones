@@ -157,8 +157,8 @@ router.post('/pago', async (req, res) => {
           let paymentResponse = await payment.create({ body, requestOptions });
           let idpayment = paymentResponse.id;
           let estadopayment = paymentResponse.status;
-          // console.log(idpayment, "paymentResponse*********************");
-          console.log(paymentResponse, "paymentResponse*********************");
+          console.log(idpayment, "paymentResponse*********************");
+          // console.log(paymentResponse, "paymentResponse*********************");
 
           // Intentar crear el producto
           // const Product = await lotteryModel.create({ identification,nombre,telefono,estadopayment,idpayment,cantidad});
