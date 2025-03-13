@@ -138,7 +138,7 @@ router.post('/pago', async (req, res) => {
                   city: "Medellín"
               }
             },  
-           
+            
               additional_info: {
                   ip_address: "127.0.0.1",
               },
@@ -207,11 +207,11 @@ router.post('/webhook', async (req, res) => {
     if (!paymentId && req.body.resource) {
        paymentId = req.body.resource; // Usamos el valor de 'resource' como paymentId
     }
-    body.paymentId = paymentId;
-    const { identification, nombre,telefono,email,cantidad,idpayment } = body;
+
+    const { identification, nombre,telefono,email,cantidad } = body;
     // console.log(paymentId, "webhook*********************");
     // console.log(req.body.data.id, "req.body.id*********************");
-      const url = `https://api.mercadopago.com/v1/payments/search?&id=${idpayment}`;
+      const url = `https://api.mercadopago.com/v1/payments/search?&id=${paymentId}`;
       const headers = {
         Authorization: `Bearer APP_USR-1720038210969834-031116-5cb0590b9a1ceaa3381d37d8ddfcf897-2322508646`,  // Usa tu token de acceso de Mercado Pago
     };
