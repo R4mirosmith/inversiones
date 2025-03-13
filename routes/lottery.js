@@ -150,7 +150,7 @@ router.post('/pago', async (req, res) => {
          callback_url: 'http://www.your-site.com'
          }
       }).then(function(response) {
-           res.status(response.status).json({
+           return res.status(response.status).json({
              status: response.body.status,
              status_detail: response.body.status_detail,
              id: response.body.id,
@@ -219,7 +219,8 @@ router.post('/pago', async (req, res) => {
           //     return res.status(500).send(JSON.stringify({ success: false, error: { code: 301, message: "El número debe estar en el rango de 000 a 999", details: null } }, null, 3));
           // }
 
-          return res.status(200).send(JSON.stringify({ success: true, data: { response: paymentResponse } }, null, 3));
+          // return res.status(200).send(JSON.stringify({ success: true, data: { response: paymentResponse } }, null, 3));
+          // return res.status(200).send(JSON.stringify({ success: true, data: { response: true } }, null, 3));
       } else {
           // Respuesta de error si los datos no están completos
           return res.status(400).json({
