@@ -114,31 +114,36 @@ router.post('/pago', async (req, res) => {
 
       // Verifica si los datos necesarios están presentes
       if (telefono && nombre && identification && email && banco_id && cantidad > 0) {
-          let name_capitalize = capitalize.words(nombre.toLowerCase());
+          let name_capitalize = capitalize.words(req.body.nombre.toLowerCase());
 
           // Crear un objeto de pago
           const body = {
               description: `Compra de ${cantidad} números.`,
               transaction_amount: 35000 * cantidad,
               payment_method_id: "pse", // Asumiendo que usas PSE
+              callback_url: "https://inversionesad.inletsoft.com/", // Reemplazar con tu URL de callback real
+              notification_url: "https://appmagdalena.net/apinversion/inversiones/webhook", // Reemplazar con tu URL de webhook real
+              payer: {
+                entity_type: "individual",
+                first_name: name_capitalize,
+                last_name: name_capitalize,
+                email: email,
+                identification: {
+                    type: "CC",
+                    number: identification
+                },
+
+            },
+
+
               additional_info: {
                   ip_address: "127.0.0.1",
               },
               transaction_details: {
                   financial_institution: banco_id,
               },
-              callback_url: "https://inversionesad.inletsoft.com/", // Reemplazar con tu URL de callback real
-              payer: {
-                  first_name: name_capitalize,
-                  last_name: name_capitalize,
-                  email: email,
-                  identification: {
-                      type: "CC",
-                      number: identification
-                  },
-                  entity_type: "individual"
-              },
-              notification_url: "https://appmagdalena.net/apinversion/inversiones/webhook" // Reemplazar con tu URL de webhook real
+
+            
           };
           console.log(body, "body*********************");
 
