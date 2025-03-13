@@ -125,9 +125,9 @@ router.post('/pago', async (req, res) => {
               notification_url: "https://appmagdalena.net/apinversion/inversiones/webhook", // Reemplazar con tu URL de webhook real
               payer: {
                 entity_type: "individual",
-                first_name: name_capitalize,
-                last_name: name_capitalize,
-                email: email,
+                first_name: "ramiro",
+                last_name: "angarita",
+                email: 'msr.ramiro@gmail.com',
                 identification: {
                     type: "CC",
                     number: identification
