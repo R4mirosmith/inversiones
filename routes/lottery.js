@@ -202,7 +202,7 @@ router.post('/webhook', async (req, res) => {
       // 4. Hacer la solicitud para obtener el estado del pago
       const response = await axios.get(url, { headers });
       const payment = response.data.results[0];
-      console.log("///////////////////////////////////////");
+      console.log("//////////////////payment/////////////////////");
       console.log(payment);
       console.log("///////////////////////////////////////");
       if (payment) {
@@ -241,7 +241,7 @@ router.post('/webhook', async (req, res) => {
                await lotteryModel.updateState(paymentId,status);
               // console.log(`Estado actualizado para el pago ${id_payment}`);
           } else {
-              console.log(`El pago ${paymentId} está aprobado y acreditado.`);
+              // console.log(`El pago ${paymentId} está aprobado y acreditado.`);
           }
             // Responder con OK a MercadoPago
           return res.status(200).send(JSON.stringify({ success: true, data: { response: payment } }, null, 3));
