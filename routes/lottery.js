@@ -194,8 +194,9 @@ router.post('/pago', async (req, res) => {
 // Endpoint para recibir las notificaciones del Webhook de MercadoPago
 router.post('/webhook', async (req, res) => {
   try {
-
-      const paymentId = req.body.id;  // MercadoPago nos envía el ID de pago
+    const paymentId = req.body.id;  // MercadoPago nos envía el ID de pago
+    console.log(req.body, "webhook*********************");
+    console.log(req.body.id, "req.body.id*********************");
       const url = `https://api.mercadopago.com/v1/payments/search?&id=${paymentId}`;
       const headers = {
         Authorization: `Bearer APP_USR-1720038210969834-031116-5cb0590b9a1ceaa3381d37d8ddfcf897-2322508646`,  // Usa tu token de acceso de Mercado Pago
