@@ -148,7 +148,7 @@ router.post('/pago', async (req, res) => {
               notification_url: "https://appmagdalena.net/apinversion/inversiones/webhook?body="+JSON.stringify(req.body), // Reemplazar con tu URL de webhook real
             
           };
-          // console.log(body, "body*********************");
+          console.log(body, "body*********************");
 
           // Generar un ID único para el idempotency key
           const idempotencyKey = Date.now().toString(); // Generar un idempotency key único
