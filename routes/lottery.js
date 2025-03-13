@@ -229,19 +229,18 @@ router.post('/webhook', async (req, res) => {
       // console.log("///////////////////////////////////////");
       if (payment) {
           const { status, status_detail } = payment;
-          const Response = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email});
-          console.log(Response, "Response create*********************");
           if (!Response) {
               return res.status(500).send(JSON.stringify({ success: false, error: { code: 301, message: "Error en la base de datos", details: null } }, null, 3));
           }
          
-          console.log(status);
-          console.log(status_detail);
+          // console.log(status);
+          // console.log(status_detail);
           // 5. Verificar si el estado no es 'approved' o 'accredited'
-          if (status == "approved" && status_detail == "accredited") {
+          // if (status == "approved" && status_detail == "accredited") {
+          if (true) {
 
             // Intentar crear el producto
-                  const Response = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email});
+            const Response = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email});
                   console.log(Response, "Response create*********************");
                   if (!Response) {
                       return res.status(500).send(JSON.stringify({ success: false, error: { code: 301, message: "Error en la base de datos", details: null } }, null, 3));
