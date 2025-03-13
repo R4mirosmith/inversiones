@@ -195,11 +195,13 @@ router.post('/webhook', async (req, res) => {
   try {
     // Primero intentamos obtener el paymentId desde req.body.data.id
     let paymentId = req.body.data ? req.body.data.id : null;
+
     // Si no existe el paymentId en req.body.data.id, utilizamos el valor de 'resource'
     if (!paymentId && req.body.resource) {
        paymentId = req.body.resource; // Usamos el valor de 'resource' como paymentId
     }
     console.log(paymentId, "webhook*********************");
+    console.log(req.body, "webhook*********************");
     // console.log(req.body.data.id, "req.body.id*********************");
       const url = `https://api.mercadopago.com/v1/payments/search?&id=${paymentId}`;
       const headers = {
