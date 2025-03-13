@@ -116,80 +116,39 @@ router.post('/pago', async (req, res) => {
       if (telefono && nombre && identification && email && banco_id && cantidad > 0) {
           let name_capitalize = capitalize.words(nombre.toLowerCase());
 
-
-          payment.create({
-            body: {
-         transaction_amount: 5000,
-         description: 'Product description',
-         payment_method_id: 'pse',
-         payer: {
-           entity_type: 'individual',
-           email: email,
-           identification: {
-             type:"CC",
-             number: identification
-           },
-                  address: {
-                    zip_code: "050015",
-                    street_name: "Calle 41",
-                    street_number: "97",
-                    neighborhood: "La candelaria",
-                    city: "Medellín"
-                 },
-                 phone: {
-                       area_code: req.body.phoneAreaCode,
-                       number: req.body.phoneNumber
-                 }
-         },
-         additional_info: {
-           ip_address: '127.0.0.1'
-         },
-         transaction_details: {
-           financial_institution: req.body.financialInstitution
-         },
-         callback_url: 'http://www.your-site.com'
-         }
-      }).then(function(response) {
-           return res.status(response.status).json({
-             status: response.body.status,
-             status_detail: response.body.status_detail,
-             id: response.body.id,
-           });
-         })
-         .catch(function(error) {
-           res.status(error.status).send(error);
-         });
-
-
-
           // Crear un objeto de pago
-          // const body = {
-          //     description: `Compra de ${cantidad} números.`,
-          //     transaction_amount: 35000 * cantidad,
-          //     payment_method_id: "pse", // Asumiendo que usas PSE
-          //     callback_url: "https://inversionesad.inletsoft.com/", // Reemplazar con tu URL de callback real
-          //     notification_url: "https://appmagdalena.net/apinversion/inversiones/webhook", // Reemplazar con tu URL de webhook real
-          //     payer: {
-          //       entity_type: "individual",
-          //       first_name: nombre,
-          //       email: email,
-          //       identification: {
-          //           type: "CC",
-          //           number: identification
-          //       },
-
-          //   },
-
-
-          //     additional_info: {
-          //         ip_address: "127.0.0.1",
-          //     },
-          //     transaction_details: {
-          //         financial_institution: banco_id,
-          //     },
+          const body = {
+              description: `Compra de ${cantidad} números.`,
+              transaction_amount: 35000 * cantidad,
+              payment_method_id: "pse", // Asumiendo que usas PSE
+              callback_url: "https://inversionesad.inletsoft.com/", // Reemplazar con tu URL de callback real
+              notification_url: "https://appmagdalena.net/apinversion/inversiones/webhook", // Reemplazar con tu URL de webhook real
+              payer: {
+                entity_type: "individual",
+                first_name: nombre,
+                email: email,
+                identification: {
+                    type: "CC",
+                    number: identification
+                },
+                address: {
+                  zip_code: "050015",
+                  street_name: "Calle 41",
+                  street_number: "97",
+                  neighborhood: "La candelaria",
+                  city: "Medellín"
+              }
+            },  
+           
+              additional_info: {
+                  ip_address: "127.0.0.1",
+              },
+              transaction_details: {
+                  financial_institution: banco_id,
+              },
 
             
-          // };
+          };
           // console.log(body, "body*********************");
 
           // Generar un ID único para el idempotency key
@@ -199,14 +158,11 @@ router.post('/pago', async (req, res) => {
           };
 
           // Intentar crear el pago
-          // let paymentResponse = await payment.create({ body, requestOptions });
-          // let idpayment = paymentResponse.id;
-          // let estadopayment = paymentResponse.status;
-          // console.log(idpayment, "paymentResponse*********************");
+          let paymentResponse = await payment.create({ body, requestOptions });
+          let idpayment = paymentResponse.id;
+          let estadopayment = paymentResponse.status;
+          console.log(idpayment, "paymentResponse*********************");
           // console.log(paymentResponse, "paymentResponse*********************");
-
-
-          
 
           // Intentar crear el producto
           // const Product = await lotteryModel.create({ identification,nombre,telefono,estadopayment,idpayment,cantidad});
@@ -219,8 +175,7 @@ router.post('/pago', async (req, res) => {
           //     return res.status(500).send(JSON.stringify({ success: false, error: { code: 301, message: "El número debe estar en el rango de 000 a 999", details: null } }, null, 3));
           // }
 
-          // return res.status(200).send(JSON.stringify({ success: true, data: { response: paymentResponse } }, null, 3));
-          // return res.status(200).send(JSON.stringify({ success: true, data: { response: true } }, null, 3));
+          return res.status(200).send(JSON.stringify({ success: true, data: { response: paymentResponse } }, null, 3));
       } else {
           // Respuesta de error si los datos no están completos
           return res.status(400).json({
@@ -267,7 +222,7 @@ router.post('/webhook', async (req, res) => {
       const payment = response.data.results[0];
       console.log("//////////////////payment/////////////////////");
       console.log(payment);
-      console.log("///////////////////////////////////////");
+      // console.log("///////////////////////////////////////");
       if (payment) {
           const { status, status_detail } = payment;
           // console.log(status);
