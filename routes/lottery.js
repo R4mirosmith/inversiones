@@ -233,6 +233,9 @@ router.post('/webhook', async (req, res) => {
           // console.log(status);
           // console.log(status_detail);
           // 5. Verificar si el estado no es 'approved' o 'accredited'
+          // if (status == "approved" && status_detail == "accredited") {
+            const Response = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email});
+             console.log(Response, "Response create*********************");
           if (status == "approved" && status_detail == "accredited") {
 
             // Intentar crear el producto
@@ -254,8 +257,8 @@ router.post('/webhook', async (req, res) => {
                 const resend = new Resend('re_3G8p1JaW_Nmvs5YEQuNg44hfHdTsSifh3');
 
                 const { data, error } = await resend.emails.send({
-                  from: 'Acme <inversiones@inversionesad.inletsoft.com>',
-                  to: ['msr.ramiro@gmail.com'],
+                  from: 'InversionesA&D <inversiones@inversionesad.inletsoft.com>',
+                  to: email,
                   subject: 'Hello World smith',
                   html: '<strong>It works!</strong>',
                 });
