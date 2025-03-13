@@ -1,9 +1,9 @@
 var db = require('../db/db.js');
 exports.create = async (body) => {
-    let values=[body.identification,body.nombre,body.telefono,body.estadopayment,body.idpayment,body.cantidad];
+    let values=[body.identification,body.nombre,body.telefono,body.estadopayment,body.idpayment,body.cantidad,body.email];
     console.log(values,"pagosss")
     const promisePool = db.get().promise();
-    return promisePool.query('CALL spInsertarClienteYNumeros(?,?,?,?,?,?)', values);
+    return promisePool.query('CALL spInsertarClienteYNumeros(?,?,?,?,?,?,?)', values);
 }
 
 
