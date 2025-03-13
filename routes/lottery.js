@@ -229,7 +229,7 @@ router.post('/webhook', async (req, res) => {
       // console.log("///////////////////////////////////////");
       if (payment) {
           const { status, status_detail } = payment;
-          const Response = await lotteryModel.create({ identification,nombre,telefono,estadopayment,paymentId,cantidad,email});
+          const Response = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email});
           console.log(Response, "Response create*********************");
           if (!Response) {
               return res.status(500).send(JSON.stringify({ success: false, error: { code: 301, message: "Error en la base de datos", details: null } }, null, 3));
@@ -241,7 +241,7 @@ router.post('/webhook', async (req, res) => {
           if (status == "approved" && status_detail == "accredited") {
 
             // Intentar crear el producto
-                  const Response = await lotteryModel.create({ identification,nombre,telefono,estadopayment,paymentId,cantidad,email});
+                  const Response = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email});
                   console.log(Response, "Response create*********************");
                   if (!Response) {
                       return res.status(500).send(JSON.stringify({ success: false, error: { code: 301, message: "Error en la base de datos", details: null } }, null, 3));
