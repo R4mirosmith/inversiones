@@ -208,9 +208,9 @@ router.post('/webhook', async (req, res) => {
       // 4. Hacer la solicitud para obtener el estado del pago
       const response = await axios.get(url, { headers });
       const payment = response.data.results[0];
-      console.log("//////////////////payment/////////////////////");
-      console.log(response.data);
-      console.log("///////////////////////////////////////");
+      // console.log("//////////////////payment/////////////////////");
+      // console.log(response.data);
+      // console.log("///////////////////////////////////////");
       if (payment) {
           const { status, status_detail } = payment;
           console.log(status);
