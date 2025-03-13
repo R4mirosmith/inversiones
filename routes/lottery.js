@@ -234,8 +234,6 @@ router.post('/webhook', async (req, res) => {
           // console.log(status_detail);
           // 5. Verificar si el estado no es 'approved' o 'accredited'
           // if (status == "approved" && status_detail == "accredited") {
-            const Response = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email});
-             console.log(Response, "Response create*********************");
           if (status == "approved" && status_detail == "accredited") {
 
             // Intentar crear el producto
@@ -319,6 +317,33 @@ async(req,res) => { try {
 
   
   return res.status(200).send(JSON.stringify({success:true,data:{count:Jornadas[0].total,jornadas:Jornadas}}, null, 3));}
+catch(err){
+  log.logger.error(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":"", "error":"${err}"}`);
+  return res.status(500).send(JSON.stringify({success:false,error:{code:301,message:"Error in service or database", details:err}}, null, 3));
+}});
+////////////////////////////////////////////////////////////////////////
+//                Get list of all number compras
+////////////////////////////////////////////////////////////////////////
+router.get('/compras/all', 
+async(req,res) => { try {
+  res.setHeader('Content-Type', 'application/json');
+  log.logger.info(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":""}`);
+  
+  //Handle validations errors
+  var errors = validationResult(req);
+  if (!errors.isEmpty()) return res.status(400).send(JSON.stringify({success:false,error:{code:201, message:"Request has invalid data",details:errors.mapped()}}, null, 3));
+  
+  //Get matched data
+  const data = matchedData(req); 
+
+
+  //Getting Jornadas
+  const [[Jornadas]] = await lotteryModel.getcomprasAll();
+  if(!Jornadas) return res.status(500).send(JSON.stringify({success:false,error:{code:301,message:"Error in database", details:null}}, null, 3));
+  if(Jornadas.length===0) return res.status(200).send(JSON.stringify({success:true,data:{count:Jornadas.count,numbers:Jornadas}}, null, 3));
+
+  
+  return res.status(200).send(JSON.stringify({success:true,data:{jornadas:Jornadas}}, null, 3));}
 catch(err){
   log.logger.error(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":"", "error":"${err}"}`);
   return res.status(500).send(JSON.stringify({success:false,error:{code:301,message:"Error in service or database", details:err}}, null, 3));
