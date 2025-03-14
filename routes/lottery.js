@@ -196,14 +196,14 @@ router.post('/pago', async (req, res) => {
           const [[[response]]] = await lotteryModel.getAll() // Aquí deberías llamar a tu SP, que debería retornar la cantidad comprada actual
           
           console.log(response.cantidad_comprada, "response*********************");
-          const limite = 10;
+          const limite = 1000;
           const cantidadDisponible = limite - response.cantidad_comprada;
           
           // Validar si la cantidad solicitada excede la cantidad disponible
           if (cantidad > cantidadDisponible) {
               return res.status(400).json({
                   status: 'error',
-                  message: cantidadDisponible == 0 ? 'No hay números disponibles' : `Solo quedan ${cantidadDisponible} números disponibles`
+                  message: cantidadDisponible == 0 ? 'No hay números disponibles' : `Solo quedan ${cantidadDisponible} números disponibles debes cambiar la cantidad de números a comprar.`
               });
           }
           
