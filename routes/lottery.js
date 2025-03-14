@@ -203,7 +203,7 @@ router.post('/pago', async (req, res) => {
           if (cantidad > cantidadDisponible) {
               return res.status(400).json({
                   status: 'error',
-                  message: `No puedes comprar más de ${cantidadDisponible} números. Por favor, compra solo esa cantidad.`
+                  message: cantidadDisponible == 0 ? 'No hay números disponibles' : `Solo quedan ${cantidadDisponible} números disponibles`
               });
           }
           
@@ -250,7 +250,6 @@ router.post('/pago', async (req, res) => {
           // Intentar crear el pago
           let paymentResponse = await payment.create({ body, requestOptions });
           let idpayment = paymentResponse.id;
-          let estadopayment = paymentResponse.status;
           console.log(idpayment, "paymentResponse*********************");
    
           return res.status(200).send(JSON.stringify({ success: true, data: { response: paymentResponse } }, null, 3));
