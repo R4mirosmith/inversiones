@@ -325,14 +325,17 @@ router.post('/webhook', async (req, res) => {
 
             // Intentar crear el producto
                const Response = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email});
+
                   if (!Response) {
                       return res.status(500).send(JSON.stringify({ success: false, error: { code: 301, message: "Error en la base de datos", details: null } }, null, 3));
                   }
 
-                  console.log(`El pago ${paymentId} está aprobado y acreditado.`);
+                  // console.log(`El pago ${paymentId} está aprobado y acreditado.`);
               const { Resend } = require('resend');
 
               (async () => {
+                const [[numbers]] = await lotteryModel.getNumbersComprados(paymentId);
+                console.log(numbers, "numbers*********************");
                 // Importación dinámica de node-fetch solo para evitar el error
                 const { default: fetch, Headers } = await import('node-fetch');
 
