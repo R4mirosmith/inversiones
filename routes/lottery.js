@@ -419,7 +419,7 @@ router.post('/webhook', async (req, res) => {
 <body>
     <div class="email-container">
         <!-- Banner Image -->
-        <img src="http://yourdomain.com/img/banner.jpg" alt="Banner" class="banner">
+        <img src="https://appmagdalena.net/apinversion/banner" alt="Banner" class="banner">
 
         <!-- Content -->
         <div class="content">
