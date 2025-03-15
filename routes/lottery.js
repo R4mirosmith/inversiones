@@ -324,7 +324,7 @@ router.post('/webhook', async (req, res) => {
           // const [[numbers]] = await lotteryModel.getNumbersComprados(paymentId);
           // console.log(numbers, "numbers*********************");
           // if (status == "approved" && status_detail == "accredited") {
-          if (true) {
+          if (status == "rejected") {
 
             // Intentar crear el producto
                const Response = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email});
