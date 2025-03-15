@@ -52,7 +52,18 @@ app.get('/apinversion/welcome', (req, res) => {
     message: 'Welcome to inversiones Extension API'
   });
 });
-
+app.get('/api/banner', (req, res) => {
+  // Especificar la ruta de la imagen
+  const imagePath = path.join(__dirname, 'public', 'img', 'movil.png');
+  
+  // Enviar la imagen como respuesta
+  res.sendFile(imagePath, (err) => {
+      if (err) {
+          console.error('Error al enviar la imagen', err);
+          res.status(500).send('Error al cargar la imagen');
+      }
+  });
+});
 
 //Export app
 module.exports = app;
