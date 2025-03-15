@@ -195,7 +195,7 @@ router.post('/pago', async (req, res) => {
           // Llamamos al procedimiento almacenado spobtenerCantidadComprada para obtener la cantidad de números comprados hasta ahora
           const [[[response]]] = await lotteryModel.getAll() // Aquí deberías llamar a tu SP, que debería retornar la cantidad comprada actual
           
-          console.log(response.cantidad_comprada, "response*********************");
+          // console.log(response.cantidad_comprada, "response*********************");
           const limite = 1000;
           const cantidadDisponible = limite - response.cantidad_comprada;
           
@@ -319,11 +319,11 @@ router.post('/webhook', async (req, res) => {
           // console.log(status);
           // console.log(status_detail);
           // 5. Verificar si el estado no es 'approved' o 'accredited'
-          const Response = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email});
+          const [Response] = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email});
 
-          console.log(Response, "**************** Response*********************");
-          console.log(Response[0], "**************** create*********************");
-          // console.log(Response[1][0].idPayment, "Response create*********************");
+          console.log(Response[1], "**************** Response*********************");
+          const idPayment = Response[1][0].p_idPayment;
+          console.log(idPayment, "idPayment create*********************");
           if (status == "approved" && status_detail == "accredited") {
 
             // Intentar crear el producto
