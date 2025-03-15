@@ -52,7 +52,7 @@ app.get('/apinversion/welcome', (req, res) => {
     message: 'Welcome to inversiones Extension API'
   });
 });
-app.get('/api/banner', (req, res) => {
+app.get('/apinversion/banner', (req, res) => {
   // Especificar la ruta de la imagen
   const imagePath = path.join(__dirname, 'public', 'img', 'movil.png');
   
