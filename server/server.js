@@ -55,7 +55,7 @@ app.get('/apinversion/welcome', (req, res) => {
 app.get('/apinversion/banner', (req, res) => {
   // Especificar la ruta de la imagen
   const imagePath = path.join(__dirname, 'server', 'img', 'movil.png');
-  
+  console.log(imagePath);
   // Enviar la imagen como respuesta
   res.sendFile(imagePath, (err) => {
       if (err) {
