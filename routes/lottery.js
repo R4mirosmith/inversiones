@@ -350,7 +350,7 @@ router.post('/webhook', async (req, res) => {
                 const { data, error } = await resend.emails.send({
                   from: 'InversionesA&D <inversiones@inversionesad.inletsoft.com>',
                   to: email,
-                  subject: 'Hello World smith',
+                  subject: `Hola, ${nombre}, tu compra ha sido exitosa`,
                  html: `
           <!DOCTYPE html>
 <html lang="es">
