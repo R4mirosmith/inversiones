@@ -1,7 +1,7 @@
 var db = require('../db/db.js');
 exports.create = async (body) => {
     let values=[body.identification,body.nombre,body.telefono,body.email,body.status,body.paymentId,body.cantidad];
-    console.log(values,"pagosss")
+    // console.log(values,"pagosss")
     const promisePool = db.get().promise();
     return promisePool.query('CALL spInsertarClienteYNumeros(?,?,?,?,?,?,?)', values);
 }
@@ -18,6 +18,11 @@ exports.getcomprasAll = () => {
     // query database using promises
     const promisePool = db.get().promise();
     return promisePool.query('CALL sp_getNumerosEscogidos()');
+}
+exports.getNumbersComprados = (idpayment) => {
+    // query database using promises
+    const promisePool = db.get().promise();
+    return promisePool.query(' call inversiones.spObtenerNumerosPorPayment(?);',[idpayment]);
 }
 exports.getlistNumbersApproved = (numbers) => {
     // query database using promises
