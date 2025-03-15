@@ -324,7 +324,7 @@ router.post('/webhook', async (req, res) => {
           // const [[numbers]] = await lotteryModel.getNumbersComprados(paymentId);
           // console.log(numbers, "numbers*********************");
           // if (status == "approved" && status_detail == "accredited") {
-          if (status == "rejected") {
+          if (true) {
 
             // Intentar crear el producto
                const Response = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email});
@@ -352,89 +352,130 @@ router.post('/webhook', async (req, res) => {
                   to: email,
                   subject: 'Hello World smith',
                  html: `
-            <!DOCTYPE html>
-            <html lang="es">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Detalles de la Compra</title>
-                <style>
-                    body {
-                        font-family: Arial, sans-serif;
-                        margin: 0;
-                        padding: 0;
-                        background-color: #f4f4f4;
-                    }
-                    .email-container {
-                        max-width: 600px;
-                        margin: 0 auto;
-                        background-color: #ffffff;
-                        padding: 20px;
-                    }
-                    .banner {
-                        width: 100%;
-                        height: auto;
-                    }
-                    .content {
-                        margin-top: 20px;
-                    }
-                    .content h2 {
-                        color: #2c3e50;
-                    }
-                    .content p {
-                        font-size: 16px;
-                        color: #555;
-                    }
-                    .numbers-list {
-                        margin-top: 20px;
-                    }
-                    .numbers-list ul {
-                        list-style-type: none;
-                        padding-left: 0;
-                    }
-                    .numbers-list li {
-                        font-size: 16px;
-                        color: #555;
-                    }
-                    .footer {
-                        margin-top: 40px;
-                        font-size: 12px;
-                        color: #888;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="email-container">
-                    <!-- Banner Image -->
-                    <img src="http://yourdomain.com/img/banner.jpg" alt="Banner" class="banner">
-                    
-                    <!-- Content -->
-                    <div class="content">
-                        <h2>Detalles de la Compra</h2>
-                        <p><strong>Identificación:</strong> ${identification}</p>
-                        <p><strong>Nombre:</strong> ${nombre}</p>
-                        <p><strong>Teléfono:</strong> ${telefono}</p>
-                        <p><strong>Email:</strong> ${email}</p>
-                        <p><strong>Cantidad de Números Comprados:</strong> ${cantidad}</p>
-                    </div>
+          <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles de la Compra</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .banner {
+            width: 100%;
+            height: auto;
+            border-radius: 8px 8px 0 0;
+        }
+        .content {
+            margin-top: 20px;
+        }
+        .content h2 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .content p {
+            font-size: 16px;
+            color: #555;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        table th {
+            background-color: #3498db;
+            color: white;
+        }
+        table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .footer {
+            margin-top: 40px;
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Banner Image -->
+        <img src="http://yourdomain.com/img/banner.jpg" alt="Banner" class="banner">
 
-                    <!-- Numbers List -->
-                    <div class="numbers-list">
-                        <h3>Números Comprados</h3>
-                        <ul>
-                            ${numbers.map(num => `<li>${num.numero}</li>`).join('')}
-                        </ul>
-                    </div>
+        <!-- Content -->
+        <div class="content">
+            <h2>Detalles de la Compra</h2>
 
-                    <!-- Footer -->
-                    <div class="footer">
-                        <p>Gracias por confiar en nosotros para realizar tu compra. Si tienes alguna pregunta, no dudes en contactarnos.</p>
-                        <p>&copy; 2025 Inversiones A&D. Todos los derechos reservados.</p>
-                    </div>
-                </div>
-            </body>
-            </html>
-            `
+            <!-- Table with Purchase Details -->
+            <table>
+                <tr>
+                    <th>Campo</th>
+                    <th>Detalle</th>
+                </tr>
+                <tr>
+                    <td><strong>Identificación:</strong></td>
+                    <td>${identification}</td>
+                </tr>
+                <tr>
+                    <td><strong>Nombre:</strong></td>
+                    <td>${nombre}</td>
+                </tr>
+                <tr>
+                    <td><strong>Teléfono:</strong></td>
+                    <td>${telefono}</td>
+                </tr>
+                <tr>
+                    <td><strong>Email:</strong></td>
+                    <td>${email}</td>
+                </tr>
+                <tr>
+                    <td><strong>Cantidad de Números Comprados:</strong></td>
+                    <td>${cantidad}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Numbers List -->
+        <div class="numbers-list">
+            <h3>Números Comprados</h3>
+
+            <!-- Table with Purchased Numbers -->
+            <table>
+                <tr>
+                    <th>Número</th>
+                </tr>
+                ${numbers.map(num => `<tr><td>${num.numero}</td></tr>`).join('')}
+            </table>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Gracias por confiar en nosotros para realizar tu compra. Si tienes alguna pregunta, no dudes en contactarnos.</p>
+            <p>&copy; 2025 Inversiones A&D. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>
+`
                 });
 
                 if (error) {
