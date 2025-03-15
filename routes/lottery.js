@@ -321,6 +321,8 @@ router.post('/webhook', async (req, res) => {
           // 5. Verificar si el estado no es 'approved' o 'accredited'
           const [Response] = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email});
           console.log(Response, "idPayment create*********************");
+          const [[numbers]] = await lotteryModel.getNumbersComprados(paymentId);
+          console.log(numbers, "numbers*********************");
           if (status == "approved" && status_detail == "accredited") {
 
             // Intentar crear el producto
