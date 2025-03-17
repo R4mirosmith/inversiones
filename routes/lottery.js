@@ -212,7 +212,7 @@ router.post('/pago', async (req, res) => {
           // Crear un objeto de pago
           const body = {
               description: `Compra de ${cantidad} números.`,
-              transaction_amount: 35000 * cantidad,
+              transaction_amount: 1000 * cantidad,
               payment_method_id: "pse", // Asumiendo que usas PSE
               callback_url: "https://inversionesad.inletsoft.com/", // Reemplazar con tu URL de callback real
               payer: {
@@ -323,8 +323,7 @@ router.post('/webhook', async (req, res) => {
           // console.log(Response, "idPayment create*********************");
           // const [[numbers]] = await lotteryModel.getNumbersComprados(paymentId);
           // console.log(numbers, "numbers*********************");
-          // if (status == "approved" && status_detail == "accredited") {
-          if (true) {
+          if (status == "approved" && status_detail == "accredited") {
 
             // Intentar crear el producto
                const Response = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email});
