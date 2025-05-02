@@ -188,17 +188,17 @@ router.post('/pago', async (req, res) => {
       const payment = new mercadopago.Payment(client);
 
       const { nombre, identification, telefono, email, banco_id, cantidad } = req.body;
-
+      console.log(req.body, "body*********************");
       // Verifica si los datos necesarios están presentes
       if (telefono && nombre && identification && email && banco_id && cantidad > 0) {
-          
+        console.log(cantidad, "cantidad*********************");
           // Llamamos al procedimiento almacenado spobtenerCantidadComprada para obtener la cantidad de números comprados hasta ahora
           const [[[response]]] = await lotteryModel.getAll() // Aquí deberías llamar a tu SP, que debería retornar la cantidad comprada actual
           
           // console.log(response.cantidad_comprada, "response*********************");
           const limite = 1000;
           const cantidadDisponible = limite - response.cantidad_comprada;
-          
+                console.log(body, "body*********************");
           // Validar si la cantidad solicitada excede la cantidad disponible
           if (cantidad > cantidadDisponible) {
               return res.status(400).json({
@@ -240,7 +240,7 @@ router.post('/pago', async (req, res) => {
               },
               notification_url: "https://appmagdalena.net/apinversion/inversiones/webhook?body="+JSON.stringify( { nombre, identification, telefono, email, cantidad } ), // Reemplazar con tu URL de webhook real
           };
-            console.log(body, "body*********************");
+      
           // Generar un ID único para el idempotency key
           const idempotencyKey = Date.now().toString(); // Generar un idempotency key único
           const requestOptions = {
