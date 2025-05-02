@@ -198,7 +198,7 @@ router.post('/pago', async (req, res) => {
           // console.log(response.cantidad_comprada, "response*********************");
           const limite = 1000;
           const cantidadDisponible = limite - response.cantidad_comprada;
-                console.log(body, "body*********************");
+  
           // Validar si la cantidad solicitada excede la cantidad disponible
           if (cantidad > cantidadDisponible) {
               return res.status(400).json({
