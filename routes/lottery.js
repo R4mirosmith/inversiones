@@ -210,6 +210,7 @@ router.post('/pago', async (req, res) => {
           let name_capitalize = capitalize.words(nombre.toLowerCase());
           
           // Crear un objeto de pago
+          console.log(cantidad, "cantidad (body)*********************");
           const body = {
               description: `Compra de ${cantidad} números.`,
               transaction_amount: 35000 * cantidad,
