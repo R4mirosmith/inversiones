@@ -212,7 +212,7 @@ router.post('/pago', async (req, res) => {
           // Crear un objeto de pago
           const body = {
               description: `Compra de ${cantidad} números.`,
-              transaction_amount: 1000 * cantidad,
+              transaction_amount: 35000 * cantidad,
               payment_method_id: "pse", // Asumiendo que usas PSE
               callback_url: "https://inversionesad.inletsoft.com/", // Reemplazar con tu URL de callback real
               payer: {
