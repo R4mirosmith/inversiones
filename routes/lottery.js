@@ -100,7 +100,32 @@ router.get('/comprados',
   catch(err){
     log.logger.error(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":"", "error":"${err}"}`);
     return res.status(500).send(JSON.stringify({success:false,error:{code:301,message:"Error in service or database", details:err}}, null, 3));
-  }});
+}});
+
+router.get('/transacition/:paymentId', 
+  async(req,res) => { try {
+    res.setHeader('Content-Type', 'application/json');
+    log.logger.info(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":""}`);
+    
+    //Handle validations errors
+    var errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).send(JSON.stringify({success:false,error:{code:201, message:"Request has invalid data",details:errors.mapped()}}, null, 3));
+    
+    //Get matched data
+    const data = matchedData(req); 
+  
+  
+    //Getting Jornadas
+    const [[cantidad]] = await lotteryModel.getAll();
+    if(!cantidad) return res.status(500).send(JSON.stringify({success:false,error:{code:301,message:"Error in database", details:null}}, null, 3));
+    if(cantidad.length===0) return res.status(200).send(JSON.stringify({success:true,data:{count:cantidad.count,numbers:cantidad}}, null, 3));
+  
+    
+    return res.status(200).send(JSON.stringify({success:true,data:{count:cantidad[0].total,cantidad:cantidad}}, null, 3));}
+  catch(err){
+    log.logger.error(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":"", "error":"${err}"}`);
+    return res.status(500).send(JSON.stringify({success:false,error:{code:301,message:"Error in service or database", details:err}}, null, 3));
+}});
 
 // // Ruta para manejar el pago
 // router.post('/pago', async (req, res) => {
@@ -209,14 +234,15 @@ router.post('/pago', async (req, res) => {
           }
           
           let name_capitalize = capitalize.words(nombre.toLowerCase());
-          
+          let guid = uuidv4()
           // Crear un objeto de pago
           console.log(cantidad, "cantidad (body)*********************");
           const body = {
               description: `Compra de ${cantidad} números.`,
               transaction_amount: 35000 * cantidad,
               payment_method_id: "pse", // Asumiendo que usas PSE
-              callback_url: "https://inversionesayd.inletsoft.com/", // Reemplazar con tu URL de callback real
+              callback_url: "https://inversionesayd.inletsoft.com?guid="+guid, // Reemplazar con tu URL de callback real
+              external_reference: guid, // ID único para la transacción
               payer: {
                 entity_type: "individual",
                 first_name: name_capitalize,
@@ -240,7 +266,7 @@ router.post('/pago', async (req, res) => {
               transaction_details: {
                   financial_institution: banco_id,
               },
-              notification_url: "https://appmagdalena.net/apinversion/inversiones/webhook?body="+JSON.stringify( { nombre, identification, telefono, email, cantidad } ), // Reemplazar con tu URL de webhook real
+              notification_url: "https://appmagdalena.net/apinversion/inversiones/webhook?body="+JSON.stringify( { nombre, identification, telefono, email, cantidad,external_reference } ), // Reemplazar con tu URL de webhook real
           };
       
           // Generar un ID único para el idempotency key
@@ -274,6 +300,7 @@ router.post('/pago', async (req, res) => {
   }
 });
 
+
 // Función para obtener la cantidad de números comprados (esta debe hacer la consulta a la base de datos)
 async function obtenerCantidadComprada() {
   // Aquí deberías realizar la llamada a tu SP para obtener la cantidad de números comprados
@@ -296,7 +323,8 @@ router.post('/webhook', async (req, res) => {
        paymentId = req.body.resource; // Usamos el valor de 'resource' como paymentId
     }
 
-    const { identification, nombre,telefono,email,cantidad } = body;
+    const { identification, nombre,telefono,email,cantidad,external_reference } = body;
+    console.log(external_reference, "external_reference*********************");
     // console.log(paymentId, "webhook*********************");
     // console.log(req.body.data.id, "req.body.id*********************");
       const url = `https://api.mercadopago.com/v1/payments/search?&id=${paymentId}`;
@@ -325,8 +353,8 @@ router.post('/webhook', async (req, res) => {
           // console.log(Response, "idPayment create*********************");
           // const [[numbers]] = await lotteryModel.getNumbersComprados(paymentId);
           // console.log(numbers, "numbers*********************");
-          // if (status == "approved" && status_detail == "accredited") {
-          if (true) {
+          if (status == "approved" && status_detail == "accredited") {
+          // if (true) {
 
             // Intentar crear el producto
                const [[[existe]]] = await lotteryModel.getExistePago(paymentId);
