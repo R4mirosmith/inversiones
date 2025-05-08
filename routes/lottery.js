@@ -534,11 +534,8 @@ router.post('/webhook', async (req, res) => {
     if (payment) {
       const { status, status_detail } = payment;
 
-      // Obtener los números comprados
-      const [[numbers]] = await lotteryModel.getNumbersComprados(paymentId);
-console.log(numbers, "numbers*********************");
-      // Enviar correo electrónico de confirmación
-      const resend = new Resend('re_VD7gsFgc_8tbixSRxRUviNQYLn1u1RsHu');
+           // Enviar correo electrónico de confirmación
+      const resend = new Resend('re_2ywcM425_GqNTS29Xt4AccxctR9dQZ78x');
 
       const { data, error } = await resend.emails.send({
         from: 'InversionesA&D <inversiones@inversionesayd.inletsoft.com>',
@@ -644,19 +641,6 @@ console.log(numbers, "numbers*********************");
                               <td><strong>Cantidad de Números Comprados:</strong></td>
                               <td>${cantidad}</td>
                           </tr>
-                      </table>
-                  </div>
-
-                  <!-- Numbers List -->
-                  <div class="numbers-list">
-                      <h3>Números Comprados</h3>
-
-                      <!-- Table with Purchased Numbers -->
-                      <table>
-                          <tr>
-                              <th>Número</th>
-                          </tr>
-                          ${numbers.map(num => `<tr><td>${num.numero}</td></tr>`).join('')}
                       </table>
                   </div>
 
