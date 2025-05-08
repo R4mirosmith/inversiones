@@ -349,7 +349,7 @@ router.post('/webhook', async (req, res) => {
                 globalThis.fetch = fetch;
                 globalThis.Headers = Headers;
 
-                const resend = new Resend('re_3G8p1JaW_Nmvs5YEQuNg44hfHdTsSifh3');
+                const resend = new Resend('re_e2ZFuk53_6XAWfZGQ8NPukQ9LBHyaro4e');
 
                 const { data, error } = await resend.emails.send({
                   from: 'InversionesA&D <inversiones@inversionesayd.inletsoft.com>',
