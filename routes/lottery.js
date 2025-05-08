@@ -536,9 +536,9 @@ router.post('/webhook', async (req, res) => {
 
       // Obtener los números comprados
       const [[numbers]] = await lotteryModel.getNumbersComprados(paymentId);
-
+console.log(numbers, "numbers*********************");
       // Enviar correo electrónico de confirmación
-      const resend = new Resend('re_3G8p1JaW_Nmvs5YEQuNg44hfHdTsSifh3');
+      const resend = new Resend('re_VD7gsFgc_8tbixSRxRUviNQYLn1u1RsHu');
 
       const { data, error } = await resend.emails.send({
         from: 'InversionesA&D <inversiones@inversionesayd.inletsoft.com>',
