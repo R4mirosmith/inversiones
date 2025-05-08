@@ -541,6 +541,8 @@ router.post('/webhook', async (req, res) => {
         const [[[existe]]] = await lotteryModel.getExistePago(paymentId);
 
         if (existe.existe_pago === 0) {
+          console.log('El pago no existe, se procederá a crear el registro.',existe.existe_pago);
+          console.log('El pago no existe, se procederá a crear el registro.',existe);
           // Crear el registro del pago en la base de datos
           const Response = await lotteryModel.create({
             identification,
