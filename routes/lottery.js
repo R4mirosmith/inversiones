@@ -271,13 +271,13 @@ router.post('/webhook', async (req, res) => {
           // console.log(Response, "idPayment create*********************");
           // const [[numbers]] = await lotteryModel.getNumbersComprados(paymentId);
           // console.log(numbers, "numbers*********************");
-          if (status == "approved" && status_detail == "accredited") {
-          // if (true) {
+          // if (status == "approved" && status_detail == "accredited") {
+          if (true) {
 
             // Intentar crear el producto
                const [[[existe]]] = await lotteryModel.getExistePago(paymentId);
                if(existe.existe_pago  == 0 ){
-               const Response = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email});
+               const Response = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email,external_reference});
 
                   if (!Response) {
                       return res.status(500).send(JSON.stringify({ success: false, error: { code: 301, message: "Error en la base de datos", details: null } }, null, 3));
