@@ -19,6 +19,11 @@ exports.getcomprasAll = () => {
     const promisePool = db.get().promise();
     return promisePool.query('CALL sp_getNumerosEscogidos()');
 }
+exports.getExistePago = (idPayment) => {
+    // query database using promises
+    const promisePool = db.get().promise();
+    return promisePool.query('CALL sp_ExistePago(?)',[idPayment]);
+}
 exports.getNumbersComprados = (idpayment) => {
     // query database using promises
     const promisePool = db.get().promise();
