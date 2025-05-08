@@ -549,6 +549,7 @@ router.post('/webhook', async (req, res) => {
         });
 
         if (existe.existe_pago === 0) {
+          console.log(existe.existe_pago , "existe*********************");
           // Crear el registro del pago en la base de datos
           const Response = await lotteryModel.create({
             identification,
