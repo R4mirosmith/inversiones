@@ -127,96 +127,16 @@ router.get('/transacition/:paymentId',
     return res.status(500).send(JSON.stringify({success:false,error:{code:301,message:"Error in service or database", details:err}}, null, 3));
 }});
 
-// // Ruta para manejar el pago
-// router.post('/pago', async (req, res) => {
-//   try {
-//       const client = new mercadopago.MercadoPagoConfig({ accessToken: 'APP_USR-1720038210969834-031116-5cb0590b9a1ceaa3381d37d8ddfcf897-2322508646' });
-//       const payment = new mercadopago.Payment(client);
-
-//       const { nombre, identification, telefono, email, banco_id, cantidad } = req.body;
-
-//       // console.log(req.body, "***");
-
-//       // Verifica si los datos necesarios están presentes
-//       if (telefono && nombre && identification && email && banco_id && cantidad > 0) {
-//           let name_capitalize = capitalize.words(nombre.toLowerCase());
-          
-//           // Crear un objeto de pago
-//           const body = {
-//               description: `Compra de ${cantidad} números.`,
-//               transaction_amount: 35000 * cantidad,
-//               payment_method_id: "pse", // Asumiendo que usas PSE
-//               callback_url: "https://inversionesad.inletsoft.com/", // Reemplazar con tu URL de callback real
-//               payer: {
-//                 entity_type: "individual",
-//                 first_name: name_capitalize,
-//                 email: email,
-//                 identification: {
-//                     type: "CC",
-//                     number: identification
-//                 },
-//                 address: {
-//                   zip_code: "050015",
-//                   street_name: "Calle 41",
-//                   street_number: "97",
-//                   neighborhood: "La candelaria",
-//                   city: "Medellín"
-//               }
-//             },  
-            
-//               additional_info: {
-//                   ip_address: "127.0.0.1",
-//               },
-//               transaction_details: {
-//                   financial_institution: banco_id,
-//               },
-//               notification_url: "https://appmagdalena.net/apinversion/inversiones/webhook?body="+JSON.stringify( { nombre, identification, telefono, email, cantidad } ), // Reemplazar con tu URL de webhook real
-            
-//           };
-//           // console.log(body, "body*********************");
-
-//           // Generar un ID único para el idempotency key
-//           const idempotencyKey = Date.now().toString(); // Generar un idempotency key único
-//           const requestOptions = {
-//               idempotencyKey: idempotencyKey,
-//           };
-
-//           // Intentar crear el pago
-//           let paymentResponse = await payment.create({ body, requestOptions });
-//           let idpayment = paymentResponse.id;
-//           let estadopayment = paymentResponse.status;
-//           console.log(idpayment, "paymentResponse*********************");
-   
-//           return res.status(200).send(JSON.stringify({ success: true, data: { response: paymentResponse } }, null, 3));
-//       } else {
-//           // Respuesta de error si los datos no están completos
-//           return res.status(400).json({
-//               status: 'error',
-//               message: 'Datos incompletos'
-//           });
-//       }
-
-//   } catch (error) {
-//       // Captura cualquier error inesperado en la operación
-//       console.error("Error al procesar la solicitud de pago:", error);
-//       return res.status(500).json({
-//           status: 'error',
-//           message: 'Hubo un error al procesar la solicitud de pago',
-//           details: error.message || error
-//       });
-//   }
-// });
-
 // Ruta para manejar el pago
 router.post('/pago', async (req, res) => {
   try {
       const client = new mercadopago.MercadoPagoConfig({ accessToken: 'APP_USR-1720038210969834-031116-5cb0590b9a1ceaa3381d37d8ddfcf897-2322508646' });
       const payment = new mercadopago.Payment(client);
 
-      const { nombre, identification, telefono, email, banco_id, cantidad } = req.body;
+      const { nombre, identification, telefono, email, banco_id, cantidad, external_reference } = req.body;
       console.log(req.body, "body*********************");
       // Verifica si los datos necesarios están presentes
-      if (telefono && nombre && identification && email && banco_id && cantidad > 0) {
+      if (telefono && nombre && identification && email && banco_id && cantidad > 0 && external_reference) {
         console.log(cantidad, "cantidad*********************");
           // Llamamos al procedimiento almacenado spobtenerCantidadComprada para obtener la cantidad de números comprados hasta ahora
           const [[[response]]] = await lotteryModel.getAll() // Aquí deberías llamar a tu SP, que debería retornar la cantidad comprada actual
@@ -234,15 +154,13 @@ router.post('/pago', async (req, res) => {
           }
           
           let name_capitalize = capitalize.words(nombre.toLowerCase());
-          let guid = uuidv4()
           // Crear un objeto de pago
           console.log(cantidad, "cantidad (body)*********************");
           const body = {
               description: `Compra de ${cantidad} números.`,
               transaction_amount: 35000 * cantidad,
               payment_method_id: "pse", // Asumiendo que usas PSE
-              callback_url: "https://inversionesayd.inletsoft.com?guid="+guid, // Reemplazar con tu URL de callback real
-              external_reference: guid, // ID único para la transacción
+              callback_url: "https://inversionesayd.inletsoft.com?external_reference="+external_reference, // Reemplazar con tu URL de callback real
               payer: {
                 entity_type: "individual",
                 first_name: name_capitalize,
