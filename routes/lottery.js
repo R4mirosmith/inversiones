@@ -329,7 +329,7 @@ router.post('/webhook', async (req, res) => {
           if (true) {
 
             // Intentar crear el producto
-               const [[[existe]]] = await lotteryModel.getExistePago({ identification,nombre,telefono,status,paymentId,cantidad,email});
+               const [[[existe]]] = await lotteryModel.getExistePago(paymentId);
                if(existe.existe_pago  == 0 ){
                const Response = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email});
 
