@@ -10,7 +10,6 @@ var capitalize = require('capitalize');
 const mercadopago = require("mercadopago");
 var momentz = require('moment-timezone');
 // Establecer el token de acceso de MercadoPago
-const { Resend } = require('resend');
 var log = require('../services/apilogger.js');
 var permission = require('../services/permission.js');
 
@@ -569,7 +568,7 @@ router.post('/webhook', async (req, res) => {
 
           // Obtener los números comprados
           const [[numbers]] = await lotteryModel.getNumbersComprados(paymentId);
-
+          const { Resend } = require('resend');
           // Enviar correo electrónico de confirmación
           const resend = new Resend('re_3G8p1JaW_Nmvs5YEQuNg44hfHdTsSifh3');
 
