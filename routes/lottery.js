@@ -350,6 +350,7 @@ router.post('/webhook', async (req, res) => {
                 globalThis.Headers = Headers;
 
                 const resend = new Resend('re_e2ZFuk53_6XAWfZGQ8NPukQ9LBHyaro4e');
+                const totalCompra = cantidad * 35000;
 
                 const { data, error } = await resend.emails.send({
                   from: 'InversionesA&D <inversiones@inversionesayd.inletsoft.com>',
@@ -406,7 +407,7 @@ router.post('/webhook', async (req, res) => {
                                   border: 1px solid #ddd;
                               }
                               table th {
-                                  background-color: #3498db;
+                                  background-color: #a61e2a;
                                   color: white;
                               }
                               table tr:nth-child(even) {
@@ -454,6 +455,10 @@ router.post('/webhook', async (req, res) => {
                                       <tr>
                                           <td><strong>Cantidad de Números Comprados:</strong></td>
                                           <td>${cantidad}</td>
+                                      </tr>
+                                      <tr>
+                                          <td><strong>Total de la Compra:</strong></td>
+                                          <td>${totalCompra.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</td>
                                       </tr>
                                   </table>
                               </div>
