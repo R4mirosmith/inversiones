@@ -538,15 +538,7 @@ router.post('/webhook', async (req, res) => {
       if (true) {
       // if (status === 'approved' && status_detail === 'accredited') {
         // Verificar si el pago ya existe en la base de datos
-        const [[[existe]]] = await lotteryModel.getExistePago({
-          identification,
-          nombre,
-          telefono,
-          status,
-          paymentId,
-          cantidad,
-          email,
-        });
+        const [[[existe]]] = await lotteryModel.getExistePago(paymentId);
 
         if (existe.existe_pago === 0) {
           console.log(existe.existe_pago , "existe*********************");
