@@ -271,7 +271,7 @@ router.post('/webhook', async (req, res) => {
                const [[[existe]]] = await lotteryModel.getExistePago(paymentId);
                if(existe.existe_pago  == 0 ){
                const Response = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email,external_reference});
-
+               console.log(Response, "Response*********************");
                   if (!Response) {
                       return res.status(500).send(JSON.stringify({ success: false, error: { code: 301, message: "Error en la base de datos", details: null } }, null, 3));
                   }
