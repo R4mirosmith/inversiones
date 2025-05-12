@@ -160,7 +160,7 @@ router.post('/pago', async (req, res) => {
               description: `Compra de ${cantidad} números.`,
               transaction_amount: 35000 * cantidad,
               payment_method_id: "pse", // Asumiendo que usas PSE
-              callback_url: "https://inversionesayd.inletsoft.com?external_reference="+external_reference, // Reemplazar con tu URL de callback real
+              callback_url: "https://appmagdalena.net/apinversion/inversiones/numbers/"+external_reference, // Reemplazar con tu URL de callback real
               payer: {
                 entity_type: "individual",
                 first_name: name_capitalize,
