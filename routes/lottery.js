@@ -845,7 +845,64 @@ router.get('/numbers/:guide',
       const [[Numbers]] = await lotteryModel.getAllNumbersByguid(data.guide);
 
       if (!Numbers || Numbers.length === 0) {
-        return res.status(404).send('<p>No se encontró información para ese GUID.</p>');
+        return res.status(404).send(`<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Compra No Exitosa</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .email-container {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .banner {
+      width: 100%;
+      border-radius: 8px 8px 0 0;
+    }
+    h2 {
+      color: #a61e2a;
+      margin-top: 20px;
+    }
+    p {
+      font-size: 16px;
+      color: #555;
+      margin-top: 15px;
+    }
+    .btn {
+      margin-top: 25px;
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: #a61e2a;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <img src="https://appmagdalena.net/apinversion/banner" alt="Banner" class="banner" />
+    <h2>No se pudo realizar la compra</h2>
+    <p>Lo sentimos, no encontramos información relacionada con el código de compra ingresado.<br/>
+       Verifica que el enlace o GUID sea correcto.</p>
+    <a href="https://inversionesayd.inletsoft.com/" class="btn">Volver a intentarlo</a>
+  </div>
+</body>
+</html>
+`);
       }
 
       const html = generarFacturaHTML(Numbers);
