@@ -896,8 +896,6 @@ router.get('/numbers/:guide',
   <div class="email-container">
     <img src="https://appmagdalena.net/apinversion/banner" alt="Banner" class="banner" />
     <h2>No se pudo realizar la compra</h2>
-    <p>Lo sentimos, no encontramos información relacionada con el código de compra ingresado.<br/>
-       Verifica que el enlace o GUID sea correcto.</p>
     <a href="https://inversionesayd.inletsoft.com/" class="btn">Volver a intentarlo</a>
   </div>
 </body>
