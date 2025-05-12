@@ -954,20 +954,36 @@ const generarFacturaHTML = (data) => {
                 </table>
             </div>
 
-            <!-- Numbers List -->
-            <div class="numbers-list">
-                <h3>Números Comprados</h3>
-                <table>
-                    <tr><th>Número</th></tr>
-                    ${numbers.map(num => `<tr><td>${num.numero}</td></tr>`).join('')}
-                </table>
-            </div>
+<!-- Numbers List -->
+<div class="numbers-list">
+    <h3>Números Comprados</h3>
+    <table>
+        <tr><th>Número</th></tr>
+        ${numbers.map(num => `<tr><td>${num.numero}</td></tr>`).join('')}
+    </table>
+</div>
 
-            <!-- Footer -->
-            <div class="footer">
-                <p>Gracias por confiar en nosotros para realizar tu compra. Si tienes alguna pregunta, no dudes en contactarnos.</p>
-                <p>&copy; 2025 Inversiones A&D. Todos los derechos reservados.</p>
-            </div>
+<!-- Botón de seguir comprando -->
+<div style="text-align: center; margin-top: 20px;">
+    <a href="https://inversionesayd.inletsoft.com/"
+       style="display: inline-block;
+              background-color: #a61e2a;
+              color: white;
+              padding: 12px 24px;
+              text-decoration: none;
+              border-radius: 5px;
+              font-weight: bold;
+              font-size: 16px;">
+        Seguir comprando
+    </a>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+    <p>Gracias por confiar en nosotros para realizar tu compra. Si tienes alguna pregunta, no dudes en contactarnos.</p>
+    <p>&copy; 2025 Inversiones A&D. Todos los derechos reservados.</p>
+</div>
+
         </div>
     </body>
     </html>
