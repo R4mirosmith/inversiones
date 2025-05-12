@@ -810,9 +810,124 @@ router.get('/person/all',
     catch(err){
       log.logger.error(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":"", "error":"${err}"}`);
       return res.status(500).send(JSON.stringify({success:false,error:{code:301,message:"Error in service or database", details:err}}, null, 3));
-    }});
+}});
+
+////////////////////////////////////////////////////////////////////////
+//                Get list of all persons
+////////////////////////////////////////////////////////////////////////
+router.get('/numbers/:guide',
+    [
+      check('guide')
+        .exists().withMessage('guide is required')
+        .notEmpty().withMessage('guide is required')
+        .trim()
+    ],
+    async(req,res) => { try {
+      res.setHeader('Content-Type', 'application/json');
+      log.logger.info(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":"tombola"}`);
+      
+      //Handle validations errors
+      var errors = validationResult(req);
+      if (!errors.isEmpty()) return res.status(400).send(JSON.stringify({success:false,error:{code:201, message:"Request has invalid data",details:errors.mapped()}}, null, 3));
+      
+      //Get matched data
+      const data = matchedData(req); 
+    
+    
+      //Getting Jornadas
+      const [[Numbers]] = await lotteryModel.getAllNumbersByguid(data.guide);
+      if(!Numbers) return res.status(500).send(JSON.stringify({success:false,error:{code:301,message:"Error in database", details:null}}, null, 3));
+      if(Numbers.length===0) return res.status(200).send(JSON.stringify({success:true,data:{Numbers:Numbers}}, null, 3));
+    
+      
+      return res.status(200).send(JSON.stringify({success:true,data:{count:Numbers.length,Numbers:Numbers}}, null, 3));}
+    catch(err){
+      log.logger.error(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":"", "error":"${err}"}`);
+      return res.status(500).send(JSON.stringify({success:false,error:{code:301,message:"Error in service or database", details:err}}, null, 3));
+}});
+
+
+router.get('/numbers/:guide',
+  [
+    check('guide')
+      .exists().withMessage('guide is required')
+      .notEmpty().withMessage('guide is required')
+      .trim()
+  ],
+  async (req, res) => {
+    try {
+      log.logger.info(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":"tombola"}`);
+
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 201,
+            message: "Request has invalid data",
+            details: errors.mapped()
+          }
+        });
+      }
+
+      const data = matchedData(req);
+      const [[Numbers]] = await lotteryModel.getAllNumbersByguid(data.guide);
+
+      if (!Numbers || Numbers.length === 0) {
+        return res.status(404).send('<p>No se encontró información para ese GUID.</p>');
+      }
+
+      const html = generarFacturaHTML(Numbers);
+      res.set('Content-Type', 'text/html');
+      return res.status(200).send(html);
+
+    } catch (err) {
+      log.logger.error(`{"verb":"${req.method}", "path":"${req.baseUrl + req.path}", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(req.query)}", "body":"${JSON.stringify(req.body)}","user":"", "error":"${err}"}`);
+      return res.status(500).send('<p>Error en el servicio o base de datos.</p>');
+    }
+  }
+);
 
 
 
+const generarFacturaHTML = (data) => {
+  if (!data || data.length === 0) return '<p>No se encontró información para ese GUID.</p>';
+
+  const { nombre, identificacion, estado_payment, guid } = data[0];
+  const numeros = data.map(d => d.numero);
+  const total = numeros.length * 35000;
+
+  return `
+    <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 40px; }
+          .factura { border: 1px solid #ccc; padding: 20px; border-radius: 10px; width: 600px; margin: auto; }
+          .factura h2 { text-align: center; }
+          .info { margin-bottom: 20px; }
+          .productos { border-collapse: collapse; width: 100%; }
+          .productos th, .productos td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+          .total { text-align: right; margin-top: 20px; font-weight: bold; }
+        </style>
+      </head>
+      <body>
+        <div class="factura">
+          <h2>Factura</h2>
+          <div class="info">
+            <p><strong>Nombre:</strong> ${nombre}</p>
+            <p><strong>Identificación:</strong> ${identificacion}</p>
+            <p><strong>Estado del pago:</strong> ${estado_payment}</p>
+            <p><strong>GUID:</strong> ${guid}</p>
+          </div>
+          <table class="productos">
+            <tr><th>#</th><th>Número</th><th>Precio</th></tr>
+            ${numeros.map((num, i) => `<tr><td>${i + 1}</td><td>${num}</td><td>$35.000</td></tr>`).join('')}
+          </table>
+          <div class="total">Total a pagar: $${total.toLocaleString()}</div>
+        </div>
+      </body>
+    </html>
+  `;
+};
 
   module.exports = router;
