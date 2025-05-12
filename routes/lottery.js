@@ -863,41 +863,116 @@ router.get('/numbers/:guide',
 const generarFacturaHTML = (data) => {
   if (!data || data.length === 0) return '<p>No se encontró información para ese GUID.</p>';
 
-  const { nombre, identificacion, estado_payment, guid } = data[0];
-  const numeros = data.map(d => d.numero);
-  const total = numeros.length * 35000;
+  const { nombre, identificacion, telefono, email } = data[0];
+  const numbers = data.map(d => ({ numero: d.numero }));
+  const cantidad = numbers.length;
+  const totalCompra = cantidad * 35000;
 
   return `
-    <html>
-      <head>
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Detalles de la Compra</title>
         <style>
-          body { font-family: Arial, sans-serif; margin: 40px; }
-          .factura { border: 1px solid #ccc; padding: 20px; border-radius: 10px; width: 600px; margin: auto; }
-          .factura h2 { text-align: center; }
-          .info { margin-bottom: 20px; }
-          .productos { border-collapse: collapse; width: 100%; }
-          .productos th, .productos td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-          .total { text-align: right; margin-top: 20px; font-weight: bold; }
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f4;
+            }
+            .email-container {
+                max-width: 600px;
+                margin: 0 auto;
+                background-color: #ffffff;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+            .banner {
+                width: 100%;
+                height: auto;
+                border-radius: 8px 8px 0 0;
+            }
+            .content {
+                margin-top: 20px;
+            }
+            .content h2 {
+                color: #2c3e50;
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+            .content p {
+                font-size: 16px;
+                color: #555;
+            }
+            table {
+                width: 100%;
+                margin-top: 20px;
+                border-collapse: collapse;
+                margin-bottom: 30px;
+            }
+            table th, table td {
+                padding: 12px;
+                text-align: left;
+                border: 1px solid #ddd;
+            }
+            table th {
+                background-color: #a61e2a;
+                color: white;
+            }
+            table tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+            .footer {
+                margin-top: 40px;
+                font-size: 12px;
+                color: #888;
+                text-align: center;
+            }
         </style>
-      </head>
-      <body>
-        <div class="factura">
-          <h2>Factura</h2>
-          <div class="info">
-            <p><strong>Nombre:</strong> ${nombre}</p>
-            <p><strong>Identificación:</strong> ${identificacion}</p>
-            <p><strong>Estado del pago:</strong> ${estado_payment}</p>
-            <p><strong>GUID:</strong> ${guid}</p>
-          </div>
-          <table class="productos">
-            <tr><th>#</th><th>Número</th><th>Precio</th></tr>
-            ${numeros.map((num, i) => `<tr><td>${i + 1}</td><td>${num}</td><td>$35.000</td></tr>`).join('')}
-          </table>
-          <div class="total">Total a pagar: $${total.toLocaleString()}</div>
+    </head>
+    <body>
+        <div class="email-container">
+            <!-- Banner Image -->
+            <img src="https://appmagdalena.net/apinversion/banner" alt="Banner" class="banner">
+
+            <!-- Content -->
+            <div class="content">
+                <h2>Detalles de la Compra</h2>
+
+                <!-- Table with Purchase Details -->
+                <table>
+                    <tr><th>Campo</th><th>Detalle</th></tr>
+                    <tr><td><strong>Identificación:</strong></td><td>${identificacion}</td></tr>
+                    <tr><td><strong>Nombre:</strong></td><td>${nombre}</td></tr>
+                    <tr><td><strong>Teléfono:</strong></td><td>${telefono || '-'}</td></tr>
+                    <tr><td><strong>Email:</strong></td><td>${email || '-'}</td></tr>
+                    <tr><td><strong>Cantidad de Números Comprados:</strong></td><td>${cantidad}</td></tr>
+                    <tr><td><strong>Total de la Compra:</strong></td><td>$${totalCompra.toLocaleString('es-CO')}</td></tr>
+                </table>
+            </div>
+
+            <!-- Numbers List -->
+            <div class="numbers-list">
+                <h3>Números Comprados</h3>
+                <table>
+                    <tr><th>Número</th></tr>
+                    ${numbers.map(num => `<tr><td>${num.numero}</td></tr>`).join('')}
+                </table>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <p>Gracias por confiar en nosotros para realizar tu compra. Si tienes alguna pregunta, no dudes en contactarnos.</p>
+                <p>&copy; 2025 Inversiones A&D. Todos los derechos reservados.</p>
+            </div>
         </div>
-      </body>
+    </body>
     </html>
   `;
 };
+
 
   module.exports = router;
