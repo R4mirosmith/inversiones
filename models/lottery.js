@@ -44,10 +44,10 @@ exports.getAllPerson = (page,limit) => {
     const promisePool = db.get().promise();
     return promisePool.query('CALL sp_GetPersonsByNumberState()',  [page,limit]);
 }
-exports.getAllNumbersByguid = (guid) => {
+exports.getAllNumbersByguid = (paymentId) => {
     // query database using promises
     const promisePool = db.get().promise();
-    return promisePool.query('CALL GetNumeroPorGuid(?)',  [guid]);
+    return promisePool.query('CALL GetNumeroPorGuid(?)',  [paymentId]);
 }
 
 
