@@ -133,7 +133,7 @@ router.post('/pago', async (req, res) => {
       const client = new mercadopago.MercadoPagoConfig({ accessToken: 'APP_USR-1720038210969834-031116-5cb0590b9a1ceaa3381d37d8ddfcf897-2322508646' });
       const payment = new mercadopago.Payment(client);
 
-      const { nombre, identification, telefono, email, banco_id, cantidad, external_reference } = req.body;
+      const { nombre, identification, telefono, email, banco_id, cantidad} = req.body;
       console.log(req.body, "body*********************");
       // Verifica si los datos necesarios están presentes
       if (telefono && nombre && identification && email && banco_id && cantidad > 0 && external_reference) {
@@ -158,15 +158,17 @@ router.post('/pago', async (req, res) => {
           console.log(cantidad, "cantidad (body)*********************");
           const datos = encodeURIComponent(JSON.stringify({
                   nombre: nombre,
-                  cantidad: cantidad,
-                  external_reference: external_reference
+                  identification: identification,
+                  telefono: telefono,
+                  email: email,
+                  cantidad: cantidad
                 }));
-                const url = `https://appmagdalena.net/apinversion/inversiones/webhook?body=${datos}`;
+
           const body = {
               description: `Compra de ${cantidad} números.`,
               transaction_amount: 35000 * cantidad,
               payment_method_id: "pse", // Asumiendo que usas PSE
-              callback_url: "https://appmagdalena.net/apinversion/inversiones/numbers/"+external_reference, // Reemplazar con tu URL de callback real
+              callback_url: "https://appmagdalena.net/apinversion/inversiones/numbers", // Reemplazar con tu URL de callback real
               payer: {
                 entity_type: "individual",
                 first_name: name_capitalize,
@@ -191,7 +193,7 @@ router.post('/pago', async (req, res) => {
                   financial_institution: banco_id,
               },
 
-              notification_url:url, // Reemplazar con tu URL de webhook real
+              notification_url:`https://appmagdalena.net/apinversion/inversiones/webhook?body=${datos}`, // Reemplazar con tu URL de webhook real
           };
       console.log(body, "body*********************");
           // Generar un ID único para el idempotency key
@@ -248,8 +250,8 @@ router.post('/webhook', async (req, res) => {
        paymentId = req.body.resource; // Usamos el valor de 'resource' como paymentId
     }
 
-    const { identification, nombre,telefono,email,cantidad,external_reference } = body;
-    console.log(external_reference, "external_reference*********************");
+    const { identification, nombre,telefono,email,cantidad} = body;
+    // console.log(external_reference, "external_reference*********************");
     // console.log(paymentId, "webhook*********************");
     // console.log(req.body.data.id, "req.body.id*********************");
       const url = `https://api.mercadopago.com/v1/payments/search?&id=${paymentId}`;
@@ -281,7 +283,7 @@ router.post('/webhook', async (req, res) => {
                console.log(existe.existe_pago, "existe*********************");
                if(existe.existe_pago  == 0 ){
                 console.log('El pago no existe, se procederá a crear el registro.',existe.existe_pago);
-               const Response = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email,external_reference});
+               const Response = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email});
                console.log(Response, "Response*********************");
                   if (!Response) {
                       return res.status(500).send(JSON.stringify({ success: false, error: { code: 301, message: "Error en la base de datos", details: null } }, null, 3));
@@ -387,8 +389,20 @@ router.post('/webhook', async (req, res) => {
                                           <th>Detalle</th>
                                       </tr>
                                       <tr>
+                                          <td><strong>Identificación:</strong></td>
+                                          <td>${identification}</td>
+                                      </tr>
+                                      <tr>
                                           <td><strong>Nombre:</strong></td>
                                           <td>${nombre}</td>
+                                      </tr>
+                                      <tr>
+                                          <td><strong>Teléfono:</strong></td>
+                                          <td>${telefono}</td>
+                                      </tr>
+                                      <tr>
+                                          <td><strong>Email:</strong></td>
+                                          <td>${email}</td>
                                       </tr>
                                       <tr>
                                           <td><strong>Cantidad de Números Comprados:</strong></td>
@@ -815,7 +829,7 @@ router.get('/person/all',
 ////////////////////////////////////////////////////////////////////////
 
 
-router.get('/numbers/:guide',
+router.get('/numbers/',
   [
     check('guide')
       .exists().withMessage('guide is required')
