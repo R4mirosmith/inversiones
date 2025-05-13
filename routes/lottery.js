@@ -155,15 +155,6 @@ router.post('/pago', async (req, res) => {
           
           let name_capitalize = capitalize.words(nombre.toLowerCase());
           // Crear un objeto de pago
-          console.log(cantidad, "cantidad (body)*********************");
-          const datos = encodeURIComponent(JSON.stringify({
-                  nombre: nombre,
-                  identification: identification,
-                  telefono: telefono,
-                  email: email,
-                  cantidad: cantidad
-                }));
-
           const body = {
               description: `Compra de ${cantidad} números.`,
               transaction_amount: 35000 * cantidad,
@@ -193,7 +184,13 @@ router.post('/pago', async (req, res) => {
                   financial_institution: banco_id,
               },
 
-              notification_url:`https://appmagdalena.net/apinversion/inversiones/webhook?body=${datos}`, // Reemplazar con tu URL de webhook real
+              notification_url:`https://appmagdalena.net/apinversion/inversiones/webhook?body=${{
+                  nombre: nombre,
+                  identification: identification,
+                  telefono: telefono,
+                  email: email,
+                  cantidad: cantidad
+                }}`, // Reemplazar con tu URL de webhook real
           };
       console.log(body, "body*********************");
           // Generar un ID único para el idempotency key
