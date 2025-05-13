@@ -184,13 +184,14 @@ router.post('/pago', async (req, res) => {
                   financial_institution: banco_id,
               },
 
-              notification_url:`https://appmagdalena.net/apinversion/inversiones/webhook?body=${JSON.stringify({
+              notification_url:"https://appmagdalena.net/apinversion/inversiones/webhook?body="+JSON.stringify({
                   nombre: nombre,
                   identification: identification,
                   telefono: telefono,
                   email: email,
                   cantidad: cantidad
-                })}`, // Reemplazar con tu URL de webhook real
+                }),
+                 // Reemplazar con tu URL de webhook real
           };
       console.log(body, "body*********************");
           // Generar un ID único para el idempotency key
