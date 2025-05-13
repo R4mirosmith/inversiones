@@ -158,9 +158,6 @@ router.post('/pago', async (req, res) => {
           console.log(cantidad, "cantidad (body)*********************");
           const datos = encodeURIComponent(JSON.stringify({
                   nombre: nombre,
-                  identification: identification,
-                  telefono: telefono,
-                  email: email,
                   cantidad: cantidad,
                   external_reference: external_reference
                 }));
@@ -390,20 +387,8 @@ router.post('/webhook', async (req, res) => {
                                           <th>Detalle</th>
                                       </tr>
                                       <tr>
-                                          <td><strong>Identificación:</strong></td>
-                                          <td>${identification}</td>
-                                      </tr>
-                                      <tr>
                                           <td><strong>Nombre:</strong></td>
                                           <td>${nombre}</td>
-                                      </tr>
-                                      <tr>
-                                          <td><strong>Teléfono:</strong></td>
-                                          <td>${telefono}</td>
-                                      </tr>
-                                      <tr>
-                                          <td><strong>Email:</strong></td>
-                                          <td>${email}</td>
                                       </tr>
                                       <tr>
                                           <td><strong>Cantidad de Números Comprados:</strong></td>
