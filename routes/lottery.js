@@ -136,7 +136,7 @@ router.post('/pago', async (req, res) => {
       const { nombre, identification, telefono, email, banco_id, cantidad} = req.body;
       console.log(req.body, "body*********************");
       // Verifica si los datos necesarios están presentes
-      if (telefono && nombre && identification && email && banco_id && cantidad > 0 && external_reference) {
+      if (telefono && nombre && identification && email && banco_id && cantidad > 0) {
         console.log(cantidad, "cantidad*********************");
           // Llamamos al procedimiento almacenado spobtenerCantidadComprada para obtener la cantidad de números comprados hasta ahora
           const [[[response]]] = await lotteryModel.getAll() // Aquí deberías llamar a tu SP, que debería retornar la cantidad comprada actual
@@ -251,7 +251,7 @@ router.post('/webhook', async (req, res) => {
     }
 
     const { identification, nombre,telefono,email,cantidad} = body;
-    // console.log(external_reference, "external_reference*********************");
+
     // console.log(paymentId, "webhook*********************");
     // console.log(req.body.data.id, "req.body.id*********************");
       const url = `https://api.mercadopago.com/v1/payments/search?&id=${paymentId}`;
