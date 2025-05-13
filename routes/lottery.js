@@ -836,7 +836,6 @@ router.get('/numbers',
       
           // Primero intentamos obtener el paymentId desde req.body.data.id
             const paymentId = req.query.payment_id;
- console.log(paymentId, "req.body.data*********************");
 //  console.log(req, "req*********************");
       const [[Numbers]] = await lotteryModel.getAllNumbersByguid(paymentId);
 

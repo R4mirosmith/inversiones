@@ -47,7 +47,7 @@ exports.getAllPerson = (page,limit) => {
 exports.getAllNumbersByguid = (paymentId) => {
     // query database using promises
     const promisePool = db.get().promise();
-    return promisePool.query('CALL GetNumeroPorGuid(?)',  [paymentId]);
+    return promisePool.query('CALL GetNumeroPorIdPayment(?)',  [paymentId]);
 }
 
 
