@@ -272,8 +272,8 @@ router.post('/webhook', async (req, res) => {
           const { status, status_detail } = payment;
         
 
-          // if(status == "approved" && status_detail == "accredited"){
-          if(true){
+          if(status == "approved" && status_detail == "accredited"){
+          // if(true){
 
             // Intentar crear el producto
                const [[[existe]]] = await lotteryModel.getExistePago(paymentId);
