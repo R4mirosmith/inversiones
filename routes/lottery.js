@@ -258,7 +258,7 @@ router.post('/webhook', async (req, res) => {
     const timeoutId = setTimeout(() => {
       console.warn(`Lock para paymentId ${paymentId} liberado automáticamente por timeout.`);
       locks.delete(paymentId);
-    }, 30000);
+    }, 60000);
     locks.set(paymentId, timeoutId);
 
     const { identification, nombre,telefono,email,cantidad} = body;
