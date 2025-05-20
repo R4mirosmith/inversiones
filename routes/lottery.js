@@ -249,15 +249,6 @@ router.post('/webhook', async (req, res) => {
     }
     if (!paymentId) return res.status(400).send('PaymentId no recibido');
 
-    
-    // Bloqueo atómico síncrono:
-    if (locks.has(paymentId)) {
-      console.log(`Ya existe lock activo para paymentId ${paymentId}, evitando ejecución duplicada.`);
-      return res.status(429).send('Procesamiento en curso, intenta más tarde.');
-    }
-
-       // Aquí asignamos el lock SIN await, ni nada async para evitar que entre otro webhook antes.
-    locks.set(paymentId, true); // Solo un flag booleano por ahora
 
     const { identification, nombre,telefono,email,cantidad} = body;
 
@@ -288,6 +279,14 @@ router.post('/webhook', async (req, res) => {
         
 
           if(status == "approved" && status_detail == "accredited"){
+                
+            if (locks.has(paymentId)) {
+              console.log(`Ya existe lock activo para paymentId ${paymentId}, evitando ejecución duplicada.`);
+              return res.status(429).send('Procesamiento en curso, intenta más tarde.');
+            }
+
+             // ✅ Bloqueo atómico antes de hacer cualquier await
+             locks.set(paymentId, true);
           // if(true){
 
             // Intentar crear el producto
@@ -296,6 +295,7 @@ router.post('/webhook', async (req, res) => {
                console.log(existe.existe_pago, "existe*********************");
 
                if(existe.existe_pago  == 0 ){
+                
                 console.log('El pago no existe, se procederá a crear el registro.',existe.existe_pago);
                const Response = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email});
                console.log(Response, "Response*********************");
