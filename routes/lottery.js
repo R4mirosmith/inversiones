@@ -233,7 +233,7 @@ async function obtenerCantidadComprada() {
   const result = await db.query('CALL spobtenerCantidadComprada()'); // Esto depende de tu DB y el SP
   return result[0].cantidad_comprada; // Ajusta esto según el nombre de la columna que devuelva el SP
 }
-
+const locks = new Map();
 // Endpoint para recibir las notificaciones del Webhook de MercadoPago
 router.post('/webhook', async (req, res) => {
   try {
@@ -247,6 +247,19 @@ router.post('/webhook', async (req, res) => {
     if (!paymentId && req.body.resource) {
        paymentId = req.body.resource; // Usamos el valor de 'resource' como paymentId
     }
+    if (!paymentId) return res.status(400).send('PaymentId no recibido');
+
+    
+    if (locks.has(paymentId)) {
+      return res.status(429).send('Este pago ya está siendo procesado');
+    }
+
+       // Creamos el lock con timeout para liberarlo automáticamente después de 30 segundos
+    const timeoutId = setTimeout(() => {
+      console.warn(`Lock para paymentId ${paymentId} liberado automáticamente por timeout.`);
+      locks.delete(paymentId);
+    }, 30000);
+    locks.set(paymentId, timeoutId);
 
     const { identification, nombre,telefono,email,cantidad} = body;
 
@@ -265,6 +278,11 @@ router.post('/webhook', async (req, res) => {
       const response = await axios.get(url, { headers });
       const payment = response.data.results[0];
 
+      if (!payment) {
+      clearTimeout(locks.get(paymentId));
+      locks.delete(paymentId);
+      return res.status(404).send('Pago no encontrado');
+    }
       // console.log("//////////////////payment/////////////////////");
       // console.log(payment);
       // console.log("///////////////////////////////////////");
@@ -279,11 +297,14 @@ router.post('/webhook', async (req, res) => {
                const [[[existe]]] = await lotteryModel.getExistePago(paymentId);
                console.log(existe, "existe*********************");
                console.log(existe.existe_pago, "existe*********************");
+
                if(existe.existe_pago  == 0 ){
                 console.log('El pago no existe, se procederá a crear el registro.',existe.existe_pago);
                const Response = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email});
                console.log(Response, "Response*********************");
                   if (!Response) {
+                        clearTimeout(locks.get(paymentId));
+                        locks.delete(paymentId);
                       return res.status(500).send(JSON.stringify({ success: false, error: { code: 301, message: "Error en la base de datos", details: null } }, null, 3));
                   }
 
@@ -449,20 +470,28 @@ router.post('/webhook', async (req, res) => {
           } else {
               // console.log(`El pago ${paymentId} está aprobado y acreditado.`);
           }
+             clearTimeout(locks.get(paymentId));
+            locks.delete(paymentId);
             // Responder con OK a MercadoPago
           return res.status(200).send(JSON.stringify({ success: true, data: { response: payment } }, null, 3));
         }
-      } else {
-          console.log(`No se encontraron datos de pago para el ID ${paymentId}`);
       }
-    
   } catch (error) {
+  
       console.error(`Error al consultar el estado del pago ${paymentId}:`, error);
+    if (paymentId && locks.has(paymentId)) {
+      clearTimeout(locks.get(paymentId));
+      locks.delete(paymentId);
+    }
   }
 
   
   } catch (error) {
     console.error('Error al procesar la notificación del webhook:', error);
+        if (paymentId && locks.has(paymentId)) {
+      clearTimeout(locks.get(paymentId));
+      locks.delete(paymentId);
+    }
     res.status(500).send('Error al procesar la notificación');
   }
 });
