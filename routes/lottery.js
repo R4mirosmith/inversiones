@@ -250,16 +250,14 @@ router.post('/webhook', async (req, res) => {
     if (!paymentId) return res.status(400).send('PaymentId no recibido');
 
     
+    // Bloqueo atómico síncrono:
     if (locks.has(paymentId)) {
-      return res.status(429).send('Este pago ya está siendo procesado');
+      console.log(`Ya existe lock activo para paymentId ${paymentId}, evitando ejecución duplicada.`);
+      return res.status(429).send('Procesamiento en curso, intenta más tarde.');
     }
 
-       // Creamos el lock con timeout para liberarlo automáticamente después de 30 segundos
-    const timeoutId = setTimeout(() => {
-      console.warn(`Lock para paymentId ${paymentId} liberado automáticamente por timeout.`);
-      locks.delete(paymentId);
-    }, 60000);
-    locks.set(paymentId, timeoutId);
+       // Aquí asignamos el lock SIN await, ni nada async para evitar que entre otro webhook antes.
+    locks.set(paymentId, true); // Solo un flag booleano por ahora
 
     const { identification, nombre,telefono,email,cantidad} = body;
 
@@ -279,8 +277,7 @@ router.post('/webhook', async (req, res) => {
       const payment = response.data.results[0];
 
       if (!payment) {
-      clearTimeout(locks.get(paymentId));
-      locks.delete(paymentId);
+        locks.delete(paymentId);
       return res.status(404).send('Pago no encontrado');
     }
       // console.log("//////////////////payment/////////////////////");
@@ -303,8 +300,7 @@ router.post('/webhook', async (req, res) => {
                const Response = await lotteryModel.create({ identification,nombre,telefono,status,paymentId,cantidad,email});
                console.log(Response, "Response*********************");
                   if (!Response) {
-                        clearTimeout(locks.get(paymentId));
-                        locks.delete(paymentId);
+                      locks.delete(paymentId);
                       return res.status(500).send(JSON.stringify({ success: false, error: { code: 301, message: "Error en la base de datos", details: null } }, null, 3));
                   }
 
@@ -470,28 +466,21 @@ router.post('/webhook', async (req, res) => {
           } else {
               // console.log(`El pago ${paymentId} está aprobado y acreditado.`);
           }
-             clearTimeout(locks.get(paymentId));
-            locks.delete(paymentId);
+          locks.delete(paymentId);
             // Responder con OK a MercadoPago
           return res.status(200).send(JSON.stringify({ success: true, data: { response: payment } }, null, 3));
         }
       }
   } catch (error) {
-  
+  locks.delete(paymentId);
       console.error(`Error al consultar el estado del pago ${paymentId}:`, error);
-    if (paymentId && locks.has(paymentId)) {
-      clearTimeout(locks.get(paymentId));
-      locks.delete(paymentId);
-    }
+ locks.delete(paymentId);
   }
 
   
   } catch (error) {
     console.error('Error al procesar la notificación del webhook:', error);
-        if (paymentId && locks.has(paymentId)) {
-      clearTimeout(locks.get(paymentId));
-      locks.delete(paymentId);
-    }
+         locks.delete(paymentId);
     res.status(500).send('Error al procesar la notificación');
   }
 });
